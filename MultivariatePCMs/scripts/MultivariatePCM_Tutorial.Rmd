@@ -1,0 +1,116 @@
+---
+title: "Multivariate Phylogenetic Comparative Methods"
+author: "Dean Adams (dcadams@iastate.edu)"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+# **Look at the link**
+**https://cran.r-project.org/web/packages/geomorph/vignettes/geomorph.PCA.html**
+
+### **Overview**
+Today we examine how one can perform phylogenetic comparative analyses on multivariate datasets. For this, the phenotypic data (Y) is a N x p matrix of phenotypic values for N species, across p trait dimensions. These p-dimensions could be a set of univariate traits (e.g., length, width, height, etc.) or they could represent a multi-dimensional trait encoded by multiple numbers (e.g., shape from geometric morphometric methods). The goal is to evaluate patterns in the response variables (Y) while conditioning the data on the phylogeny. In other words, we wish to perform macroevolutionary analyses via phylogenetic comparative methods, but do so on multivariate data. 
+
+As we discussed in class, most univariate PCMs now have a multivariate counter-part: phylogenetic regression, phylogenetic ANOVA, phylogenetic correlation, phylogenetic signal, and comparing rates of phenotypic evolution. What does *NOT* have a proper multivariate counter-part are multivariate evolutionary models beyond BM1 and BMM (see Adams and Collyer 2018a; Adams and Collyer 2019). 
+
+### Download data files
+Today we will use data from the following files: 
+
+[Phylogeny](https://eeob-macroevolution.github.io/EEOB-565X-Spring2018/practicals/TutorialData/Consensus of 1000 salamander trees.nex)
+
+[Data1](https://eeob-macroevolution.github.io/EEOB-565X-Spring2018/practicals/TutorialData/meandata-CinGlutOnly.csv)
+
+Additionally, The R-script for running the code found in this tutorial is found here:
+
+[RScript](https://eeob-macroevolution.github.io/EEOB-565X-Spring2018/practicals/TutorialData/MultivariatePCMs.r)
+
+As before, on your local computer, place them in a folder named 'TutorialData', which is found in the same directory as this tutorial. 
+
+### **Visualizing High-Dimensional Data**
+One challenge with multivariate data is that visualizing patterns in such data is not always straightforward. For instance, we may have 8 phenotypic measurements per species, meaning each species is a point in an 8-dimensional phenotype space. Visually characterizing patterns of dispersion in such spaces is challenging, so we rely on ordination methods from classical multivariate statistics. To do this, we first bring our data into R. Then we perform a principal components analysis to visualize a two-dimesional representation (projection) of our data that explains as much variation as is possible such that the dataspace is not distored (i.e., under the constraint of rigid rotations):
+
+```{r eval=TRUE}
+#Read Tree and data; prune
+library(geomorph)
+library(geiger)
+library(phytools)
+tree.best<-read.nexus("TutorialData/Consensus of 1000 salamander trees.nex") #Maximum Credible Tree
+plethdata<-read.csv("TutorialData/meandata-CinGlutOnly.csv",row.names=1, header=TRUE )
+ Y<-plethdata[,c(3:8)]
+     Y<-apply(Y,2,as.numeric);row.names(Y)<-row.names(plethdata)
+ size<-plethdata[,2];names(size)<-row.names(plethdata) 
+ gp<-as.factor(plethdata[,1]); names(gp)<-row.names(plethdata)
+plethtree<-treedata(phy = tree.best,data = plethdata, warnings = FALSE)$phy
+plot(plethtree)
+axisPhylo(1)
+
+gdf <- geomorph.data.frame(Y=Y, size=size,gp=gp,phy = plethtree) #needed for geomorph
+
+Y.pc<-prcomp(Y)$x   #principal components of Y
+plot(Y.pc,asp=1, pch=21,bg="black")
+text(x=2+Y.pc[,1],y=.5+Y.pc[,2],row.names(Y.pc),cex=.5)
+```
+
+#### **Phylomorphospaces**
+When one has a phylogeny, one useful visualization is a phylomorphospace. Here, an ordination is performed on the phenotypic data at the tips of the phylogeny, ancestral states are estimated, and these are projected into the dataspace. This forms a plot that contains both the tips, and the phylogeny; allowing a visual inspection of how trait dispersion relative to the phylogenetic relationships among taxa. Such plots are very useful for hypothesis generation, as discussed in class.
+
+```{r eval=TRUE}
+phylomorphospace(tree = plethtree,X = Y.pc[,1:2])
+#plotGMPhyloMorphoSpace(phy = plethtree,A = arrayspecs(Y,p=1,k=6), ancStates = FALSE, tip.labels = FALSE) 
+#plotGMPhyloMorphoSpace(phy = plethtree,A = arrayspecs(Y,p=1,k=6),ancStates = FALSE) 
+    #note: axes are properly scaled; In phytools they are not
+ #plotGMPhyloMorphoSpace(phy = plethtree,A = arrayspecs(Y,p=1,k=6),ancStates = FALSE, zaxis = "time")  #not run. 
+```
+
+#### **Phylogenetic Regression**
+For univariate response data, the 'workhorse' of PCMs is undoubtedly phylogenetic regression. Three implementations are commonly used and all lead to identical results when implemented properly: phylogenetically independent contrasts (PIC), phylogenetic generalized least squares (PGLS), and phylogenetic-transformation with OLS regression. Unfortunately, for multivariate data, as trait dimensionality increases, the power of these methods decreases, because test statistics are evaluated using parametric approaches (Adams 2014a; Adams and Collyer 2015). 
+
+One solution is to use permutation methods. Specifically, phylogenetic transformation of the X and Y data is performed, and residuals from a reduced model are permuted (RRPP) to obtain significance (Adams and Collyer 2018b). The method has been shown to display appropriate type I error and has high power. It is implemented below:
+
+```{r eval=TRUE}
+PGLS.reg<-procD.pgls(Y ~ size, phy = phy, data = gdf, iter = 999, print.progress = FALSE) # randomize residuals
+summary(PGLS.reg)
+plot(PGLS.reg, type = "regression", predictor=size,reg.type = "RegScore") 
+```
+
+#### **Phylogenetic ANOVA**
+Statistically related to regression is analysis of variance (ANOVA). It has recently been shown that for phylogenetic data, the RRPP approach described above is equally appropriate for phylogenetic ANOVA (Adams and Collyer 2018b). Recall however that the dispersion of groups across the phylogeny can affect both statistical and biological inferences. In particular, 'clumping' of groups on the phylogeny (phylogenetic aggregation) can lower statistical power and hamper inferences. In the extreme case of all species for a group belonging to a monophyletic sub-clade, one effectively has a single 'transition' of groups on the phylogeny; making it challenging to identify group differences in the response variable (this is akin to the BiSSE issues of state change replication discussed earlier in the semester). 
+
+```{r eval=TRUE}
+PGLS.aov<-procD.pgls(Y ~ gp, phy = phy, data = gdf, iter = 999, print.progress = FALSE) # randomize residuals
+summary(PGLS.aov)  #no difference once phylogeny considered 
+```
+
+#### **Phylogenetic PLS: Phylogenetic Partial Least Squares**
+Tests of association between two traits are commonly accomplished using correlation. The multivariate equivalent is partial least squares (PLS), which identifies the maximal assocation between two sets of variables. This may also be implemented in a phylogenetic context, with significance obtained via RRPP (Adams & Felice 2014).
+
+```{r eval=TRUE}
+PLS.Y <- phylo.integration(A = Y[,1:3], A2 = Y[,4:6], phy= plethtree, print.progress = FALSE)
+summary(PLS.Y)
+plot(PLS.Y)
+```
+
+#### **Phylogenetic Signal**
+The degree to which trait variation associates with the phylogeny is termed phylogenetic signal. For univariate data, Blomberg et al. (2003) proposed the Kappa statistic. Its multivariate equivalent, K.mult, evaluates phylogenetic signal in multivariate data (Adams 2014b).
+
+```{r eval=TRUE}
+PS.shape <- physignal(A=Y,phy=plethtree,iter=999, print.progress = FALSE)
+summary(PS.shape)
+plot(PS.shape)
+```
+
+#### **Multivariate Rates of Evolution**
+One can also envision comparing rates of phenotypic evolution in multivariate traits. Here, the net rate of evolution is characterized, found as the mean of the rates of the individual trait dimensions (Adams 2014c). Two approaches for comparing evolutionary rates have been developed, which mirror methods discussed for univariate rate tests. First, one may compare rates of multivariate evolution between clades (Adams 2014c). Second, for two multivariate traits, one may compare rates of evolution between traits (Denton and Adams 2015).
+
+```{r eval=TRUE}
+#5a: Compare Evolutionary Rates Among Clades
+ER<-compare.evol.rates(A=Y, phy=plethtree,gp=gp,iter=999, print.progress = FALSE)
+summary(ER)   #significantly higher rate of morphological evolution 'large' Plethodon
+plot(ER)
+
+#5b: Compare Evolutionary Rates Among Traits
+var.gp <- c("B","A","A","B","B","B")  #head (A) vs. body (B)
+EMR<-compare.multi.evol.rates(A=Y,gp=var.gp, Subset=TRUE, phy= plethtree,iter=999, print.progress = FALSE)
+summary(EMR) #Limb traits evolve faster than head traits
+plot(EMR)
+```

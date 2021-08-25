@@ -1,0 +1,190 @@
+---
+title: "Ancestral State Estimation"
+author: "Dean Adams (dcadams@iastate.edu)"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+
+<style>
+div.func { background-color:#8DC6EF; border-radius: 5px; padding: 20px;}
+</style>
+
+<style>
+div.try { background-color:#F0B68D; border-radius: 5px; padding: 20px;}
+</style>
+
+
+```{r,echo=F}
+
+knitr::read_chunk('AncStateEstimation.R')
+
+```
+
+
+
+
+### **Overview**
+Today we explore methods for estimating ancestral character states. For many macroevolutionary hypotheses, ancestral state estimation is essential. Such estimates allow us to infer the order of evolutionary transitions across the tree of life, estimate how frequently some evolutionary events have occured, and understand the initial conditions that gave rise to current patterns of phenotypic diversity. 
+
+Note, parts of this tutorial are based on and adapted from that of L. Revell: http://www.phytools.org/eqg2015/asr.html 
+
+### Download data files
+To run the analyses in this tutorial, please download the following files from our Git-course repository: 
+
+[Phylogeny1](https://eeob-macroevolution.github.io/EEOB-565X-Spring2018/practicals/TutorialData/anole.gp.tre)
+
+[Phylogeny2](https://eeob-macroevolution.github.io/EEOB-565X-Spring2018/practicals/TutorialData/anole.svl.tre)
+
+[Data1](https://eeob-macroevolution.github.io/EEOB-565X-Spring2018/practicals/TutorialData/anole.gp.csv)
+
+[Data2](https://eeob-macroevolution.github.io/EEOB-565X-Spring2018/practicals/TutorialData/anole.svl.csv)
+
+Additionally, The R-script for running the code found in this tutorial is found here:
+
+[RScript](https://eeob-macroevolution.github.io/EEOB-565X-Spring2018/practicals/TutorialData/AncStateEstimation.r)
+
+As before, on your local computer, place them in a folder named 'TutorialData', which is found in the same directory as this tutorial. 
+
+### **Ancestral State Estimation of Discrete Characters**
+
+
+
+<div class = "try">
+#### Reading in the Data
+
+Here we explore methods for estimating ancestral states of discrete characters. First, we bring our data into R:
+
+1. Load the `gieger` and `phytools` package
+1. Read in the tree titled `anole.gp.tre`. This file can be found in the data folder of this tutorial
+2. Use the `read.csv()` function to read in the discrete trait data called `anole.gp.csv`
+    + be sure to set `row.names=1`. This makes it so the first column in the `csv` get read as the rownames.
+3. Match the phylogeny tips to the trait data. 
+    + Be sure to set the `sort` argument to `TRUE`.
+4. Assign the matched tree to a new variable called `tree` and the matched data to a new variable called `group`. The remainder of the tutorial will assume these variable names for the phylogeny and data frmae with traits, respectively. 
+5. Try plotting the phylogeny and using the `tiplabels()` function to plot the character states on the tips.
+    + There are a lot of species this phylogeny so you may wish to add the argument `type="fan"` to the `plot()` function. This plots the phylogeny in a radial fashion and may make the plot less cluttered
+
+</div>
+<br></br>
+
+
+
+```{r,read_data, eval=T,echo=F,results='hide'}
+
+```
+
+Here we see our phylogeny and our discrete character states for the extant taxa. This is a phylogeny of *Anolis* lizards and their habitat use. Species tend to concentrate their activities to particular habitat types. Thus, some interesting questions might be:
+
+1) What is the ancestral *Anolis* habitat type? 
+2) Are species utilizing the same habitat each others' closest relatives (i.e., are they monophyletic clades)?
+3) How many times have species evolved to utilize a specific habitat?
+
+#### **Discrete Characters: Maximum Parsimony**
+One method for estimating ancestral character states is based on maximum parsimony (MP). Here the goal is to minimize the total number of changes between character states across the phylogeny to reconcile the data at the tips of the phylogeny with the topology of the phylogeny. 
+
+However, while MP methods are straight-forward to understand and quick to implement, they have several serious deficiencies. First, all transitions between traits are considered to be equally likely; which is related to the fact that transitions between states are equally weighted. These assumptions are clearly violated with real data. Also, and critically, branch length information is completely ignored using maximum parsimony. **For these reasons, we will NOT demonstrate MP approaches in this tutorial!** 
+
+#### **Discrete Characters: Maximum Likelihood**
+An alternative is to use a model-based approach such as maximum likelihood (ML). Here we model the evolutionary transitions between character states, and select those ancestral values that maximize the likelihood of the data, conditioned on the phylogeny, the model, and the ancestral states. Here we perform this analysis in R using the `ace()` function.
+
+<div class = "func">
+
+<details>
+  <summary> <font size="+2"> `ace()` </font> </summary>
+ 
+This function performs **a**ncestral **c**haracter **e**stimation for both discrete and continuous characters. First, we'll focus on the parameters needed for *discrete* character estimation:
+
+* $x$ A factor or vector with character traits.
+* $phy$ 
+* $type$ A string with the type of data, either `"discrete"` or `"continuous"`.
+* $method$ a string specifying the method used for estimation, can be `"ML"`, `"REML"`, `"pic"`, or `"GLS"`. **NOTE:** some of these options are only appropriate when `type="continuous"`. For discrete data we'll use `"ML"`.
+* $model$ a rate matrix that specifies the parameters for transition rates. This is the same type of rate matrix that we generated in the Phylogenetic Association of Discrete Characters tutorial.
+
+The function outputs a list with many elements, some of the elements of interest are:
+
+* $\$loglik$ The log likelihood of the model
+* $\$rates$ The estimates for the transition rates
+* $\$lik.anc$ The likelihood of each state at each node
+
+
+</details>
+</div>
+<br></br>
+
+```{r,ml_est, eval=TRUE}
+```
+
+Again, note that internal nodes are estimated as combinations of different states. This reflects the fact that no single state is 100% likely for those nodes.
+
+<div class = "try">
+#### Try it out! Ancestral State Estimation with an All Rates Different Model
+
+Here we will try an ancestral state estimation with a different model for trait evolution and compare it to our equal rates model. Do the following
+
+1. Create a rate matrix for our data where all the rates are different
+2. perform ancestral state estimation using the all rates different matrix
+    + How do rate estimates differ between the two models?
+3. Conduct a likelihood ratio test between the two models **Hint:** How many parameters does the 'ARD' model have? You may want to look at the rate matrix for help with this.
+    + Which model would you conclude is a better fit?
+4. Plot the ancestral state estimation on the phylogeny 
+    + How does this compare to the previous visualization? Are any clades drastically different?
+
+</div>
+<br></br>
+
+#### **Discrete Characters: Bayesian Stochastic Mapping**
+An alternative to ML approaches is to utilize a Bayesian perspective. Here, a Markov process is used to model trait evolution on the phylogeny, given a model of transition rates between states. A single iteration yields what is called a *stochastic map*; representing one possible embodiment of evolution under the Markov process. Repeating this many times and summarizing the values provides a useful estimate of ancestral states. Here we perform this analysis in R:
+
+```{r,simmap, eval=TRUE}
+```
+
+Again, note that internal nodes are estimated as combinations of different states. This reflects the fact that no single state is 100% likely for those nodes.
+
+
+#### **Continuous Characters: Maximum Likelihood**
+For continuous characters, one envisions evolution under a Brownian motion model, which is the embodiment of a Markov process on a continuous scale. Fortunately, the ML algorithm above can accommodate such patterns of character evolution.
+
+
+<div class = "try">
+#### Reading in the Data
+
+In order to do ancestral state estimation of continuous characters we need to read in some more data
+
+1. Read in the tree titled `anole.svl.tre`. This file can be found in the data folder of this tutorial
+    + save the phylogny under the variable name `tree`, this tutorial will assume it has that variable name
+2. Use the `read.csv()` function to read in the discrete trait data called `anole.svl.csv`
+    + be sure to set `row.names=1`. This makes it so the first column in the `csv` get read as the rownames.
+    + save the data under the variable name `data_cont`, this tutorial will assume it has that variable name
+
+</div>
+<br></br>
+
+```{r,read_data_cont, eval=TRUE,echo=FALSE,results='hide'}
+
+```
+
+Importantly, continuous character evolution can also be mathematically derived from other analytical approaches: namely squared change parsimony (SCP: minimizing squared evolutionary changes across the phylogeny) and generalized least squares (GLS).  As shown by Martins and Hansen (1997), ML, SCP, and GLS yield identical ancestral estimates: 
+
+```{r,anc_est_cont, eval=TRUE}
+#Data from Mahler et al. 2010. Evolution
+#using 'ace' function in APE
+anc.cont.ML2<-ace(x=svl,phy=tree, type="continuous", method="ML")
+anc.cont.ML2$ace  #with APE
+anc.cont.ML$ace   #with phytools: the same estimates
+
+anc.cont.gls<-ace(x=svl,phy=tree, corStruct = corBrownian(1, tree), method="GLS")  #same as ML  (see Schluter et al. 1997)
+anc.cont.gls$ace   #GLS: SCP. the same
+```
+
+#### **Continuous Characters: Bayesian Estimation with Fossils**
+Many times, it is prudent to incorporate fossil information when available. This is **critically important**, as fossils provide calibration for the remaining estimates. Conceptually, fossils act much like an anchor, and allow one to condition the ancestral estimates on the phylogeny, the model, and the fossils.  An example below (via simulation) shows the difference in estimates with and without 'fossil' priors:
+
+```{r,known_nodes, eval=TRUE}
+```
+
+##Practical Question
+
+1: Using the *Anolis* phylogeny and body size data, what is the estimated ancestral body size at the **ROOT** of the phylogeny when using maximum likelihood?
+
+Upload your code to the assignment center on Canvas 
