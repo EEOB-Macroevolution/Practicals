@@ -3,7 +3,18 @@ title: "BiSSE and HiSSE in R"
 author: "Josh Justison"
 date: "7/1/2021"
 output: html_document
+knit: (function(inputFile, encoding) {
+  rmarkdown::render(inputFile, encoding = encoding, output_dir = "../") })
 ---
+
+
+<style>
+div.func { background-color:#8DC6EF; border-radius: 5px; padding: 20px;}
+</style>
+
+<style>
+div.try { background-color:#F0B68D; border-radius: 5px; padding: 20px;}
+</style>
 
 
 ```{r setup, include=FALSE}
@@ -21,6 +32,12 @@ Here we will be going over how to set up and use BiSSE and HiSSE models in R.
 
 
 ## Learning Objectives
+
+* Be able to make and fit BiSSE models in R
+    + Know how to constrain a BiSSE model
+* Evaluate which models are a better fit, either thru AIC or Log-likelihoods
+* Comprehend the rate matrix of a HiSSE model and be able to make on in R
+* Fit a HiSSE model given a phylogeny and data
 
 
 ## Background Material
@@ -64,10 +81,24 @@ For our model we'll be using simulated phylogenetic and trait data. It's terribl
 <summary>**Simulating trees according to a BiSSE model**</summary>
 <br>
 
-We will be using the `tree.bisse()` function to simulate our data. This function takes a plethora of various arguments so it can be helpful to look at `?tree.bisse()` for documentation of these arguments. For our purposes we will be using the following arguments:
+We will be using the `tree.bisse()` function to simulate our data.
+
+<div class = "func">
+
+<details>
+  <summary> <font size="+2"> `tree.bisse()` </font> </summary>
+ 
+This function fits various models of continuous character evolution to trees. This function has many parameters but we'll be using the following ones:
+
+This function takes a plethora of various arguments so it can be helpful to look at `?tree.bisse()` for documentation of these arguments. For our purposes we will be using the following arguments:
 
 * $pars$: This is a vector containing all the associated parameters of the BiSSE model. Specifically, the vector has the parameters in this order $(\lambda_0,\lambda_1,\mu_1,\mu_0,q_{01},q_{10})$  
 * $max.taxa$: This is a number that specifies how many extant taxa we include in our simulation. 
+
+
+</details>
+</div>
+<br></br>
 
 
 ```{r}
@@ -111,12 +142,23 @@ We can see that $\lambda_1$ is higher than $\lambda_0$, meaning that lineages in
 
 ### Fitting the BiSSE model
 
-Now we will find out if BiSSE is able to correctly infer whether there are changes in the diversification rates on our simulated tree, by estimating the rates using maximum likelihood. We can use the `make.bisse()` function to create a $BiSSE$ model for our data. This
+Now we will find out if BiSSE is able to correctly infer whether there are changes in the diversification rates on our simulated tree, by estimating the rates using maximum likelihood. We can use the `make.bisse()` function to create a $BiSSE$ model for our data. 
+
+<div class = "func">
+<details>
+  <summary> <font size="+2"> `make.bisse()` </font> </summary>
+
 This simply attaches a BiSSE model to our simulated tree. This function has many different arguments but only two required ones that we'll be using:
 
 
 * $tree$: This should be our phylogenetic tree. The tree should be bifurcating and ultrametric.  
 * $states$: This is a vector of tip states. The states in the vector should either be $0$ or $1$. The vector should have names that correspond to the tip labels in the phylogenetic tree (`tree$tip.label`). For example, in the simulated tree above we can see `names(tree_bisse$tip.state)` matches the names found in `tree_bisse$tip.label`. The order of the two vectors don't need to match exactly but they both should contain the same elements. 
+
+</details>
+</div>
+<br></br>
+
+
 
 ```{r}
 bisse_model = make.bisse(tree_bisse, tree_bisse$tip.state)
@@ -138,10 +180,22 @@ bisse_model(c(4.0, 1.0, 0  , 1  , 0.5, 0.5))
 
 We can see that our first set of parameters returned a higher likelihood, this should be pretty reasonable as these are actually the parameters that simulated the model under! Our goal is to find the parameter values that maximize our likelihood function. We could try different combinations of values by hand but this would be very tedious and imprecise. Luckily, we have clever functions that attempt to maximize our likelihood.
 
-Specifically, `find.mle()` can be used to find the maximum likelihood estimate (MLE) for our parameters. This function has two main parameters:
+Specifically, `find.mle()` can be used to find the maximum likelihood estimate (MLE) for our parameters.
+
+<div class = "func">
+<details>
+  <summary> <font size="+2"> `find.mle()` </font> </summary>
+
+This function has two main parameters:
 
 * $lik$: This is our likelihood function for our model  
 * $x.init$: Initial values for our parameter estimates. 
+
+</details>
+</div>
+<br></br>
+
+
 
 
 We can try finding the parameters that maximize our likelihood as long as we have some initial values. We can use `starting.point.bisse()` to get reasonable starting values.
@@ -150,7 +204,7 @@ initial_pars<-starting.point.bisse(tree_bisse)
 fit_model<-find.mle(bisse_model,initial_pars)
 
 ```
-**Note: *Contrary to the name of the function, `find.mle()` doesn't guarantee that we actually find the parameters that maximize the likelihood as `find.mle()` is a [greedy algorithm](https://en.wikipedia.org/wiki/Greedy_algorithm), meaning that it will find a local optima which may or may not be the global optima that maximizes likelihood. As a result, we may get a different results based on the initial values we choose. It can be a good practice to try a few different starting points with `find.mle()` and if they converge on the same set of parameter values then we can be more confident that we are at a global optimum. 
+**Note:** Contrary to the name of the function, `find.mle()` doesn't guarantee that we actually find the parameters that maximize the likelihood as `find.mle()` is a [greedy algorithm](https://en.wikipedia.org/wiki/Greedy_algorithm), meaning that it will find a local optima which may or may not be the global optima that maximizes likelihood. As a result, we may get a different results based on the initial values we choose. It can be a good practice to try a few different starting points with `find.mle()` and if they converge on the same set of parameter values then we can be more confident that we are at a global optimum. 
 
 The object returned from `find.mle()` has a slew of different components. Two componenets that might be useful for us are the log-likelihood of the fit model and the parameter estimates, these are denoted with   `lnLik` and `par` respectively.
 
@@ -167,12 +221,23 @@ sim_parameters
 
 Although, we don't get the same estimates as the simulation condition, it seems that our fit model captures the idea that the two states have different speciation parameters. However, our fit model also estimated different extinction parameters for each state when in fact we simulated with both states having $\mu=0.5$. As such, we may wish to create a model where the $\mu's$ are constrained to be the same.
 
-We can use the `constrain()` function to constrain certain parameters of our model. This function has two main arguments:
+We can use the `constrain()` function to constrain certain parameters of our model. 
+
+<div class = "func">
+<details>
+  <summary> <font size="+2"> `constrain()` </font> </summary>
+
+This function has two main arguments:
 
 * $f$: This is the likelihood function or model that will be getting additional constraints 
-* $formulae$: This is where we add formulae that constrain our parameters.
+* $formulae$: This is where we add formulae that constrain our parameters. 
 
 Constraint formulae typically take the format `x ~ y`. This can be interpreted as '`x` is constrained to the value of `y`', meaning that parameter `x` will take on the same values as `y`. `y` can be a constant value (e.g. `mu1~3`), a parameter from the model (e.g. `lambda0 ~ lambda1`), or some expression of parameters (e.g. `lambda0 ~ (2*lambda1)-mu1`). When it comes to setting the values of extinction to be the same between states, we just need to constrain one of the $\mu's$ to the other $\mu$.
+
+</details>
+</div>
+<br></br>
+
 
 ```{r}
 constrained_bisse_model <-constrain(bisse_model,mu0 ~ mu1)
@@ -244,7 +309,13 @@ The HiSSE model was developed to address this issue, by implementing a better nu
 
 We want to test whether the changes in rates are due to the observed character or to a hidden one, so first we will build a null model where the rates only depend on a hidden character. In our case we  actually know and have access to the character that actually causes a change in rates, but for the purposes of demonstration, we will pretend that we don't have that information and only have trait data for our secondary character.
 
- We can create and run our model with the `hisse()` function. We will be using the following arguments for this function:
+ We can create and run our model with the `hisse()` function. 
+ 
+ <div class = "func">
+<details>
+  <summary> <font size="+2"> `hisse()` </font> </summary>
+
+ We will be using the following arguments for this function:
 
 * $phy$:This is our phylogenetic tree.
 * $data$ This is a dataframe with our trait information. The dataframe has two columns: the first column has the species names while the second column has the character states for each species
@@ -255,10 +326,31 @@ We want to test whether the changes in rates are due to the observed character o
 
 There are quite a few arguements and some of them may be unfamiliar. We will go over how to interpret and set up the `trans.rate`, `turnover`, and `eps` arguments below.
 
-The first step is to build a transition rate matrix for the null model. To do this we will use `TransMatMakerHiSSE()`. We will be using two arguments for this function:
+</details>
+</div>
+<br></br>
+ 
+ 
+
+The first step is to build a transition rate matrix for the null model. To do this we will use `TransMatMakerHiSSE()`. 
+
+ <div class = "func">
+<details>
+  <summary> <font size="+2"> `TransMatMakerHiSSE()` </font> </summary>
+
+ We will be using the following arguments for this function:
+
+We will be using two arguments for this function:
 
 * $hidden.traits$: This is a numeric value that specifies how many hidden states are in the model. If we set `hidden.traits=0` then this would be the same as the BiSSE model.
-* $make.null$: This argument takes a logical TRUE/FALSE and sets the matrix to be the null model where (1) transition rates are the same across all hidden states and (2) the transition rates between hidden states are the same. 
+* $make.null$: This argument takes a logical TRUE/FALSE and sets the matrix to be the null model where (1) transition rates are the same across all hidden states and (2) the transition rates between hidden states are the same.
+
+</details>
+</div>
+<br></br>
+
+
+ 
 
 ```{r}
 null_rate_matrix <- TransMatMakerHiSSE(hidden.traits = 1,make.null=T)

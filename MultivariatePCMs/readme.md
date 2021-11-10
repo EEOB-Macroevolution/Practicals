@@ -1,9 +1,8 @@
-## Tutorial_Skeleton
 
 ###Contents
-This file contains the contents for the Tutorial_Skeleton
+This file contains the contents for the Multivariate phylogenetic comparative methods
 
-You will find the tutorial labeled Tutorial_Skeleton.html here. 
+You will find the tutorial labeled MultivariatePCMs.html here. 
 
 
 You will find the following subdirectories here:
@@ -18,7 +17,9 @@ You will find the following subdirectories here:
 If following along with the code in this tutorial, we assume the working directory is the same as the tutorial itself (i.e. `/Tutorial_Skeleton`)
 You will need the following R packages to run the tutorial:
 
-
+geomorph
+geiger
+phytools
 
 
 

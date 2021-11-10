@@ -4,8 +4,8 @@ library(geiger, warn.conflicts=F, quietly=T) #also loads ape
 library(phytools, warn.conflicts=F, quietly=T)
 
 
-tree<-read.tree("TutorialData/tree.64.tre",tree.names=T)
-mydata<-read.csv('TutorialData/DiscreteData.csv', row.names=1, header=TRUE)
+tree<-read.tree("../data/tree.64.tre",tree.names=T)
+mydata<-read.csv('../data/DiscreteData.csv', row.names=1, header=TRUE)
 head(mydata) ##Head can be used to show the first few rows of a data frame 
 
 #Match data with tree

@@ -3,6 +3,8 @@ title: "Ancestral State Estimation"
 author: "Dean Adams (dcadams@iastate.edu)"
 date: "`r Sys.Date()`"
 output: html_document
+knit: (function(inputFile, encoding) {
+  rmarkdown::render(inputFile, encoding = encoding, output_dir = "../") })
 ---
 
 
@@ -28,6 +30,12 @@ knitr::read_chunk('AncStateEstimation.R')
 Today we explore methods for estimating ancestral character states. For many macroevolutionary hypotheses, ancestral state estimation is essential. Such estimates allow us to infer the order of evolutionary transitions across the tree of life, estimate how frequently some evolutionary events have occured, and understand the initial conditions that gave rise to current patterns of phenotypic diversity. 
 
 Note, parts of this tutorial are based on and adapted from that of L. Revell: http://www.phytools.org/eqg2015/asr.html 
+
+### Learning Objectives
+
+* Understand how transition rate models are used to create ancestral state estimations for discrete characters
+* Be able to create a simmap using stochastic methods
+* Create ancestral state estimations for continuous characters using either ML, GLS, or SCP
 
 ### Download data files
 To run the analyses in this tutorial, please download the following files from our Git-course repository: 
@@ -61,7 +69,7 @@ Here we explore methods for estimating ancestral states of discrete characters. 
     + be sure to set `row.names=1`. This makes it so the first column in the `csv` get read as the rownames.
 3. Match the phylogeny tips to the trait data. 
     + Be sure to set the `sort` argument to `TRUE`.
-4. Assign the matched tree to a new variable called `tree` and the matched data to a new variable called `group`. The remainder of the tutorial will assume these variable names for the phylogeny and data frmae with traits, respectively. 
+4. Assign the matched tree to a new variable called `tree` and the matched data to a new variable called `group`. The remainder of the tutorial will assume these variable names for the phylogeny and data frame with traits, respectively. 
 5. Try plotting the phylogeny and using the `tiplabels()` function to plot the character states on the tips.
     + There are a lot of species this phylogeny so you may wish to add the argument `type="fan"` to the `plot()` function. This plots the phylogeny in a radial fashion and may make the plot less cluttered
 
@@ -125,6 +133,7 @@ Here we will try an ancestral state estimation with a different model for trait 
 1. Create a rate matrix for our data where all the rates are different
 2. perform ancestral state estimation using the all rates different matrix
     + How do rate estimates differ between the two models?
+    + What is the likelihood of each state at the root of the phylogeny?
 3. Conduct a likelihood ratio test between the two models **Hint:** How many parameters does the 'ARD' model have? You may want to look at the rate matrix for help with this.
     + Which model would you conclude is a better fit?
 4. Plot the ancestral state estimation on the phylogeny 
@@ -134,12 +143,48 @@ Here we will try an ancestral state estimation with a different model for trait 
 <br></br>
 
 #### **Discrete Characters: Bayesian Stochastic Mapping**
-An alternative to ML approaches is to utilize a Bayesian perspective. Here, a Markov process is used to model trait evolution on the phylogeny, given a model of transition rates between states. A single iteration yields what is called a *stochastic map*; representing one possible embodiment of evolution under the Markov process. Repeating this many times and summarizing the values provides a useful estimate of ancestral states. Here we perform this analysis in R:
+An alternative to ML approaches is to utilize a Bayesian perspective. Here, a Markov process is used to model trait evolution on the phylogeny, given a model of transition rates between states. A single iteration yields what is called a *stochastic map*; representing one possible embodiment of evolution under the Markov process. Repeating this many times and summarizing the values provides a useful estimate of ancestral states. Here we perform this analysis in R using the `make.simmap()` function.
+
+
+<div class = "func">
+
+<details>
+  <summary> <font size="+2"> `make.simmap()` </font> </summary>
+ 
+This function performs stochastic mapping using several different methods. Essentially, given a model for character evolution, it simulates histories under the model. The function has many parameters and modes, we will be using the "empirical" uses the following arguments
+
+* $tree$
+* $x$ A factor or vector with character traits.
+* $model$ a rate matrix that specifies the parameters for transition rates. This is the same type of rate matrix that we generated in the Phylogenetic Association of Discrete Characters tutorial.
+* $nsim$ The number of times we want to simulate a character evolution history
+
+The function outputs a `simmap` object that lists how long each branch spent in each state.
+
+
+</details>
+</div>
+<br></br>
 
 ```{r,simmap, eval=TRUE}
 ```
 
 Again, note that internal nodes are estimated as combinations of different states. This reflects the fact that no single state is 100% likely for those nodes.
+
+<div class = "try">
+#### Porgs revisited
+
+We looked at Porgs in the Discrete Character Evolution tutorial, now we will look at them again and estimate ancestral states
+
+1. Read in the Porg phylogeny and character data. If you need to download them again, you can find them here.
+2. Create an 'equal rates' rate matrix and all 'rates different' rate matrix for the porg data.
+3. use `ace()` to estimate ancestral states
+    + What is the likelihood of each state at the root for each model
+4. Plot the ancestral state estimations for each model. How do they compare?
+5. Use the directional model that you created in the Discrete Character Evolution tutorial to create a stochastic mapping.
+6. Plot a summary of your stochastic mappings
+
+</div>
+<br></br>
 
 
 #### **Continuous Characters: Maximum Likelihood**
@@ -152,7 +197,7 @@ For continuous characters, one envisions evolution under a Brownian motion model
 In order to do ancestral state estimation of continuous characters we need to read in some more data
 
 1. Read in the tree titled `anole.svl.tre`. This file can be found in the data folder of this tutorial
-    + save the phylogny under the variable name `tree`, this tutorial will assume it has that variable name
+    + save the phylogeny under the variable name `tree`, this tutorial will assume it has that variable name
 2. Use the `read.csv()` function to read in the discrete trait data called `anole.svl.csv`
     + be sure to set `row.names=1`. This makes it so the first column in the `csv` get read as the rownames.
     + save the data under the variable name `data_cont`, this tutorial will assume it has that variable name
@@ -164,27 +209,31 @@ In order to do ancestral state estimation of continuous characters we need to re
 
 ```
 
-Importantly, continuous character evolution can also be mathematically derived from other analytical approaches: namely squared change parsimony (SCP: minimizing squared evolutionary changes across the phylogeny) and generalized least squares (GLS).  As shown by Martins and Hansen (1997), ML, SCP, and GLS yield identical ancestral estimates: 
+Importantly, continuous character evolution can also be mathematically derived from other analytical approaches: namely squared change parsimony (SCP: minimizing squared evolutionary changes across the phylogeny) and generalized least squares (GLS).  
 
 ```{r,anc_est_cont, eval=TRUE}
-#Data from Mahler et al. 2010. Evolution
-#using 'ace' function in APE
-anc.cont.ML2<-ace(x=svl,phy=tree, type="continuous", method="ML")
-anc.cont.ML2$ace  #with APE
-anc.cont.ML$ace   #with phytools: the same estimates
-
-anc.cont.gls<-ace(x=svl,phy=tree, corStruct = corBrownian(1, tree), method="GLS")  #same as ML  (see Schluter et al. 1997)
-anc.cont.gls$ace   #GLS: SCP. the same
 ```
+
+As shown by Martins and Hansen (1997), ML, SCP, and GLS yield identical ancestral estimates. For estimates thru ML and GLS, we can use the `ace()` function that we used for ancestral state estimation of discrete characters. For ML estimation, we can use the function as we did before with the exception of changing `type="continuous"`. Getting estimates via GLS should give the same estimates but is a bit more complicated because we have to provide a correlation matrix in the `ace()` function.
+
+```{r,anc_est_cont_ml,eval=TRUE}
+```
+
+```{r,anc_est_cont_gls,eval=TRUE}
+```
+
+Each approach gives the same result, how neat is that?
+
+<div class = "try">
+#### Ancestral state estimates of Anolis
+
+1: Using the *Anolis* phylogeny and body size data, what is the estimated ancestral body size (`SVL`) at the **ROOT** of the phylogeny when using maximum likelihood?
+
+</div>
+<br></br>
 
 #### **Continuous Characters: Bayesian Estimation with Fossils**
 Many times, it is prudent to incorporate fossil information when available. This is **critically important**, as fossils provide calibration for the remaining estimates. Conceptually, fossils act much like an anchor, and allow one to condition the ancestral estimates on the phylogeny, the model, and the fossils.  An example below (via simulation) shows the difference in estimates with and without 'fossil' priors:
 
 ```{r,known_nodes, eval=TRUE}
 ```
-
-##Practical Question
-
-1: Using the *Anolis* phylogeny and body size data, what is the estimated ancestral body size at the **ROOT** of the phylogeny when using maximum likelihood?
-
-Upload your code to the assignment center on Canvas 

@@ -3,6 +3,14 @@ title: "Practical: Introduction to Phylogenetics in R"
 output: html_document
 ---
 
+<style>
+div.func { background-color:#8DC6EF; border-radius: 5px; padding: 20px;}
+</style>
+
+<style>
+div.try { background-color:#F0B68D; border-radius: 5px; padding: 20px;}
+</style>
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
@@ -70,6 +78,18 @@ Items in a list can be accessed by calling their position using the `[[]]` opera
 l[[3]] 
 l$message
 ```
+
+<div class = "try">
+### Try it out! data.frames
+
+The `data.frame` object is another common datatype we will encounter in R. These operate much like matrices, or two dimensional vectors. data frames can also have multiple types of data in them, they can store strings of categorical variables in one and numerical data in another column. There are many ways to access elements in a `data.frame`. If we have columns with names, we can use the `$` operator to access specific columns. alternatively, we can use bracket notation to access specific, rows, columns, or a combination of the two. Using braket notation, you specify rows and columns with `[rows,column]`; if either the rows or columns are left blank then it will return all rows or columns. For example if we have a data frame saved as `my_df` then `my_df$height` would return the column named 'height' while `my_df[,2]` returns the second column and all rows since the rows portion was left blank.
+
+1. Access the `iris` base dataset in R. It should already be loaded, you can make sure it is by typing `iris` into the console.
+2. use the `head()` function to look at the first few rows of the data frame. What kind of variables are there in the data set and what kind of values do they take?
+3. try making a histogram of the 'Petal.length' column using both bracket notation and the `$` operator.
+
+</div>
+<br></br>
 
 R provides functions for generating random deviates from several different parametric distributions. For example, we can draw a single random value uniformly from the interval (0,1):
 ```{r}
@@ -215,6 +235,20 @@ nexus_tree <- read.nexus("nexus.nex")
 
 Again, this tree is identical to the original.
 
+<div class = "try">
+### Try it out! Newick Strings
+
+Here we have a phylogeny with branch lengths denoted in green.
+![](../figs/try_it_tree.png)
+
+1. Try writing by hand the newick string representation of this phylogeny.
+2. Now try reading in this newick string using the `read.tree()` function. **HINT** you will want to put your string in the `text` argument of the `read.tree()` function. 
+3. plot your tree with the `plot()` function. Does it look like the phylogeny from the image
+
+</div>
+<br></br>
+
+
 ### Plotting trees
 
 Visualizing trees is another useful function provided by the _ape_ package. By default, trees are plotted as phylograms, with tip labels:
@@ -265,6 +299,36 @@ Note that these are depths, i.e. the root is at d=0. In order to obtain the time
 depths <- node.depth.edgelength(tree)
 max(depths) - depths
 ```
+
+`drop.tip` can also be a helpful function. In some cases we don't have trait data for all tips on a phylogeny and may wish a get rid of some of those tips.
+
+<div class = "func">
+
+<details>
+  <summary> <font size="+2"> `drop.tip()` </font> </summary>
+ 
+This function removes tips from a phylogeny. It has a couple different argument but we'll only really need to concern ourselves with two of them:
+
+
+* $phy$ A phylo object
+* $tip$ A vector with a single tip or many tips to be removed. The vector may either contain the node number of the tips that are to be removed or a character vector with the names of the tips that you want to remove.
+
+</details>
+</div>
+<br></br>
+
+<div class = "try">
+### Try it out! Drop tips from a phylogenetic tree
+
+Here we will use the tree that you wrote by hand in the previous section. Let's say we don't have any trait data for A or B and want to remove them for our analysis.
+
+1. Try removing the tips by entering the tip node numbers in the `tip` argument
+2. Try removing the tips by entering the tip names in the `tip` argument
+
+Do these trees look the same? What happens to the root of the tree, is the tree the same length?
+
+</div>
+<br></br>
 
 ## Estimating trees in R
 
@@ -418,7 +482,7 @@ The results of this comparison show that GTR (model 2) is best supported.
 In the lecture, you were given the optional challenge to calculate the likelihood of the tree pictured below assuming equal branch lengths and the JC69 model. The next part of this lesson will be to do this in R. 
 
 
-![](challenge_tree.001.png)
+![](../figs/challenge_tree.001.png)
 
 
 For a detailed explanation, you can see Josh Justison's solution to the challenge problem here: [https://jjustison.github.io/tree-likelihood](https://jjustison.github.io/tree-likelihood/)

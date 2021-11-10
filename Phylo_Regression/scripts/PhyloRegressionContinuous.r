@@ -21,14 +21,14 @@ library(ape)
 library(geiger)
 
 #Here is a large time-dated molecular phylogeny (a chronogram):
-ManderTree<-read.tree("TutorialData/Mander.tre",tree.names=T)
+ManderTree<-read.tree("../data/Mander.tre",tree.names=T)
 plot(ManderTree)
 
 
 #Read in data, phylogeny, and match/prune them to one another
-ManderTree<-read.tree("TutorialData/Mander.tre",tree.names=T)
+ManderTree<-read.tree("../data/Mander.tre",tree.names=T)
 plot(ManderTree)
-Mander_dat<-read.csv("TutorialData/PlethodonMns.csv", header=TRUE, row.names = 1) #Notice we read in the first column as row.names. These MUST match the names in the phylogeny
+Mander_dat<-read.csv("../data/PlethodonMns.csv", header=TRUE, row.names = 1) #Notice we read in the first column as row.names. These MUST match the names in the phylogeny
 
 Mander_dat[,12]<-(as.numeric(Mander_dat[,12]=="N")) ##Convert the groups from strings to numerics. Treedata doesn't like different types of data.
 
@@ -50,7 +50,7 @@ Groups<-as.factor(Pleth_matched$data[,12]);names(Groups)<-rownames(Pleth_matched
 
 
 #Now read in data for species in the genus Hydromantes
-Hyd_dat<-read.csv("TutorialData/HydromantesMns.csv", header=TRUE, row.names = 1)
+Hyd_dat<-read.csv("../data/HydromantesMns.csv", header=TRUE, row.names = 1)
 Hyd_dat  
 
 
@@ -78,8 +78,8 @@ summary(lm(Hind_pic~BodyW_pic+0))   #coefficients of the model
 ## ---- PGLS ----
 
 #To perform PGLS in R, we must first estimate the phylogenetic covariance matrix V (C in matrix form):
-species<- names(Groups)
-V<-corBrownian(phy=Pleth_matched$phy,form = ~species)
+spc <- Pleth_matched$phy$tip.label
+V<-corBrownian(phy=Pleth_matched$phy,form = ~spc)
 C <- vcv.phylo(phy = Pleth_matched$phy)
 
 #Now we run the analysis:
@@ -98,9 +98,11 @@ res.PhyT<-lm.rrpp(Hind~Fore, data = rdf, Cov = C, print.progress = FALSE)
 anova(res.PhyT)   
 res.PhyT$LM$gls.coefficients ## the estimated coefficients of the model
 
-## ---- phylo_ANOVA ----
+## ---- phylo_ANOVA_wrong ----
 
 aov.phylo(SVL~Groups, phy = Pleth_matched$phy) ##Not the same analysis
+
+## ---- phylo_ANOVA
 anova(lm.rrpp(SVL~Groups, data = rdf, Cov = C, print.progress = FALSE))
 anova(gls(SVL~Groups,correlation = V, data=data.frame(SVL, Groups)))  #identical to Phylo.transform
 
@@ -118,7 +120,8 @@ plot(res)
 ####Additional Simulation Approaches
 #Simulate correlated data
 library(MASS)
-R<-matrix(0.7, nrow=2,ncol=2); diag(R)<-1
+R<-matrix(0.7, nrow=2,ncol=2); diag(R)<-1 ## This matrix desribes the covariation between traits
+R
 dat.sim<-mvrnorm(n=10000,Sigma = R,mu = c(0,0))
 plot(dat.sim, asp=1)
 
@@ -126,11 +129,12 @@ plot(dat.sim, asp=1)
 ## ---- Phylo_cor_sim ----
 #Simulate BM correlated data on phylogeny
 mytree<- pbtree(n=100, scale=1) #one way to simulate a tree
-R<-matrix(0.7, nrow=2,ncol=2); diag(R)<-1
+R<-matrix(0.7, nrow=2,ncol=2); diag(R)<-1 ## This matrix desribes the covariation between traits
+R
 dat.BM<-sim.char(phy = mytree,par = R,nsim = 1)[,,1]
 plot(dat.BM, asp=1)
 
-##Practical Questions
+## ----Practical Questions ----
 
 #To apply what you have learned, please do the following:
 

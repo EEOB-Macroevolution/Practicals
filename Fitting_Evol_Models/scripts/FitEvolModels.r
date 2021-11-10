@@ -1,14 +1,16 @@
 #Evolutionary models of continuous trait evolution in R
 
-## Read data & tree
+## ----read_data----
 library(phytools)
 library(geiger)
 
-tree<-read.tree("TutorialData/anole.gp.tre",tree.names=T)
-group<-read.csv('TutorialData/anole.gp.csv', row.names=1, header=TRUE,colClasses=c('factor'))
+tree<-read.tree("../data/anole.gp.tre",tree.names=T)
+group<-read.csv('../data/anole.gp.csv', row.names=1, header=TRUE,colClasses=c('factor'))
 gp<-as.factor(t(group)); names(gp)<-row.names(group)
-svl<-read.csv('TutorialData/anole.svl2.csv', row.names=1, header=TRUE)
+svl<-read.csv('../data/anole.svl2.csv', row.names=1, header=TRUE)
 svl<-as.matrix(treedata(phy = tree,data = svl, warnings=FALSE)$data)[,1]  #match data to tree
+
+####----plot_data----
 
 ##BM plot data
 tree.col<-contMap(tree,svl,plot=FALSE)  #runs Anc. St. Est. on branches of tree
@@ -24,24 +26,47 @@ tiplabels(pie=model.matrix(~gp-1),piecol=cols,cex=0.3)
 add.simmap.legend(colors=cols,prompt=FALSE,x=0.8*par()$usr[1],
                   y=-max(nodeHeights(tree)-.6),fsize=0.8)
 
+## ----BM_sim----
+nsim <- 100
+t <- 0:100  # time
+sig2 <- 0.005
+X <- matrix(rnorm(n = nsim * (length(t) - 1), sd = sqrt(sig2)), nsim, length(t) - 1)
+X <- cbind(rep(0, nsim), t(apply(X, 1, cumsum)))
+plot(t, X[1, ], xlab = "time", ylab = "phenotype", ylim = c(-2, 2), type = "l")
+apply(X[2:nsim, ], 1, function(x, t) lines(t, x), t = t)
 
-## 1: Some evolutionary models in GEIGER
-  #NOTE: may need to adjust the bounds of the search: see help file
+## ----fit_BM----
+
 fit.BM1<-fitContinuous(tree, svl, model="BM")  #Brownian motion model
-fit.BMtrend<-fitContinuous(tree, svl, model="trend")   #Brownian motion with a trend
-fit.EB<-fitContinuous(tree, svl, model="EB")   #Early-burst model
-fit.lambda<-fitContinuous(tree, svl, 
-        bounds = list(lambda = c(min = exp(-5), max = 2)), model="lambda")  #Lambda model
-options(warn=-1)
-fit.K<-fitContinuous(tree, svl, model="kappa")   #Early-burst model
-options(warn=-1)
+fit.BM1
+
+##----OU_sim----
+
+#from Lars Shmitz tutorial: http://schmitzlab.info/BMandOU.html 
+OU.sim <- function(n, theta, alpha, sigma,x0){
+  dw  <- rnorm(n, 0)
+  x <- c(x0)
+  for (i in 2:(n+1)) {
+    x[i]  <-  x[i-1] + alpha*(theta-x[i-1]) + sigma*dw[i-1]
+  }
+  return(x);
+}
+OU1.sim1 <- replicate(100, OU.sim(n=100, theta=0.5, alpha=0.5, sigma=0.03, x0=0.5), simplify=FALSE) #No change
+OU1.sim2 <- replicate(100, OU.sim(n=100, theta=0.75, alpha=0.5, sigma=0.03, x0=0.25), simplify=FALSE) #start and theta differ
+par(mfcol = c(1, 2))
+plot(OU1.sim1[[1]],xlab = "time", ylab = "phenotype", ylim = c(0,1), type = "l")
+for(i in 2:100){lines(OU1.sim1[[i]])}
+plot(OU1.sim2[[1]],xlab = "time", ylab = "phenotype", ylim = c(0,1), type = "l")
+for(i in 2:100){lines(OU1.sim2[[i]])}
+par(mfcol = c(1,1))
+
+## ----OU_fit----
+
 fit.OU1<-fitContinuous(tree, svl,model="OU")    #OU1 model
+fit.OU1
 
-#Examine AIC
-c(fit.BM1$opt$aic,fit.BMtrend$opt$aic,fit.EB$opt$aic,fit.lambda$opt$aic,fit.OU1$opt$aic)
-  #NOTE: none of these generate dAIC > 4.  So go with simplest model (BM1)
 
-# Compare LRT formally (NOT needed in this case, but done so anyway)
+## ----BM_OU_compare----
 LRT<- -(2*(fit.BM1$opt$lnL-fit.OU1$opt$lnL))
 prob<-pchisq(LRT, 1, lower.tail=FALSE)
 LRT
@@ -50,13 +75,27 @@ prob
 fit.BM1$opt$aic
 fit.OU1$opt$aic
 
-## 2: More complex models: Multiple Ornstein-Uhlenbeck Peaks
+
+## ----evol_models_geiger----
+fit.BMtrend<-fitContinuous(tree, svl, model="trend")   #Brownian motion with a trend
+fit.EB<-fitContinuous(tree, svl, model="EB")   #Early-burst model
+fit.lambda<-fitContinuous(tree, svl, 
+        bounds = list(lambda = c(min = exp(-5), max = 2)), model="lambda")  #Lambda model
+options(warn=-1)
+fit.K<-fitContinuous(tree, svl, model="kappa")   #Early-burst model
+
+#Examine AIC
+c(fit.BM1$opt$aic,fit.BMtrend$opt$aic,fit.EB$opt$aic,fit.lambda$opt$aic,fit.OU1$opt$aic)
+  #NOTE: none of these generate dAIC > 4.  So go with simplest model (BM1)
+
+
+
+## ----OUwie_model_basic----
 library(OUwie)
 data<-data.frame(Genus_species=names(svl),Reg=gp,X=svl)  #input data.frame for OUwie
-
-fitBM1<-OUwie(tree,data,model="BM1",simmap.tree=TRUE)
-fitOU1<-OUwie(tree,data,model="OU1",simmap.tree=TRUE) 
-  tree.simmap<-make.simmap(tree,gp)  # perform & plot stochastic maps (we would normally do this x100)
+tree.simmap<-make.simmap(tree,gp)  # perform & plot stochastic maps (we would normally do this x100)
+fitBM1<-OUwie(tree.simmap,data,model="BM1",simmap.tree=TRUE)
+fitOU1<-OUwie(tree.simmap,data,model="OU1",simmap.tree=TRUE) 
 fitOUM<-OUwie(tree.simmap,data,model="OUM",simmap.tree=TRUE)
 
 fitBM1  
@@ -70,7 +109,8 @@ fitOUM  #OUM is strongly preferred (examine AIC)
 #hist(OUM.AIC)
 #abline(v=fitBM1$AIC, lwd=2) #add value for BM1
 
-## 3: More complex models: Multiple Evolutionary Rates
+
+##----BM_many_rates----
 
 # 3A: BM1 vs BMM: Comparing evolutionary rates
 tree.simmap<-make.simmap(tree,gp)  # perform & plot stochastic maps (we would normally do this x100)
@@ -98,7 +138,8 @@ plot(x=ps, par="shifts", burnin=0.25, legend=TRUE, show.tip=FALSE, edge.width=2)
 
 
 
-###################  FOR LECTURE:
+## ----lecture_lambda----
+
 #1: what does lambda do?
 TreeLambda0 <- rescale(tree, model = "lambda", 0)
 TreeLambda5 <- rescale(tree, model = "lambda", 0.5)

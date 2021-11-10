@@ -8,8 +8,8 @@ library(geiger)
 
 ######Discrete Anc. State Estimation
 ## Read data & tree
-tree<-read.tree("TutorialData/anole.gp.tre",tree.names=T)
-group<-read.csv('TutorialData/anole.gp.csv', row.names=1)
+tree<-read.tree("../data/anole.gp.tre",tree.names=T)
+group<-read.csv('../data/anole.gp.csv', row.names=1)
 gp<-as.factor(t(group)); names(gp)<-row.names(group)
 
 ## ----plot_phylo----
@@ -84,8 +84,8 @@ rm(list = ls())
 ## ---- read_data_cont ----
 
 #Data from Mahler et al. 2010. Evolution
-tree<-read.tree("TutorialData/anole.svl.tre",tree.names=T)
-cont_data<-read.csv('TutorialData/anole.svl.csv', row.names=1)
+tree<-read.tree("../data/anole.svl.tre",tree.names=T)
+cont_data<-read.csv('../data/anole.svl.csv', row.names=1)
 
 
 ## -----anc_est_cont-----
@@ -98,10 +98,15 @@ cont_data_vect<-setNames(cont_data$svl,rownames(cont_data)) ##contMap needs a na
 tree.col<-contMap(tree,cont_data_vect,plot=FALSE)  #runs Anc. St. Est. on branches of tree
 plot(tree.col,type="fan")
 
+## ----anc_est_cont_ace_ml----
+
 #using 'ace' function in APE
 anc.cont.ML2<-ace(x=cont_data_vect,phy=tree, type="continuous", method="ML")
 anc.cont.ML2$ace  #with APE
 anc.cont.ML$ace   #with phytools: the same estimates
+
+
+## ----anc_est_cont_ace_gls ----
 
 anc.cont.gls<-ace(x=cont_data_vect,phy=tree, corStruct = corBrownian(1, tree), method="GLS")  #same as ML  (see Schluter et al. 1997)
 anc.cont.gls$ace   #GLS: SCP. the same

@@ -1,0 +1,266 @@
+---
+title: "Tutorial conventions"
+author: "Josh Justison"
+date: "11/10/2021"
+output: html_document
+---
+
+<style>
+div.func { background-color:#8DC6EF; border-radius: 5px; padding: 20px;}
+</style>
+
+<style>
+div.try { background-color:#F0B68D; border-radius: 5px; padding: 20px;}
+</style>
+
+## Heading
+
+For these Rmarkdown tutorials they must each start with a header. The header for most tutorials look something like this:
+
+```
+---
+title: "Tutorial conventions"
+author: "Josh Justison"
+date: "11/10/2021"
+output: html_document
+knit: (function(inputFile, encoding) {
+  rmarkdown::render(inputFile, encoding = encoding, output_dir = "../") })
+---
+```
+The last two lines with the `knit:...` are especially important. Most .Rmd scripts are in a `./tutorial_topic/scripts` subdirectory directory. We want the htmls in `./tutorial_topic` and the last two lines put them in the appropriate spot.
+
+
+## Sections
+
+I don't really have super tight formatting for these but I do think it is nice to start with the following three sections:
+* Introduction/Overview/Conceptual Background
+* Learning Objectives
+* Section for downloading files
+
+One note on the section for downloading file, I usually just note the directory where all tutorial things are available and then list all the files with a clickable download link. Clickable links can be made by providing the url directly to the file of interest. For example:
+`[readme](https://eeob-macroevolution.github.io/Practicals/README.md`. Does this [readme](https://eeob-macroevolution.github.io/Practicals/README.md)
+
+## Code Snippets
+
+I tried to remove all, or at least most, code from the Rmd files themselves. Instead, the code for tutorials has primarily been moved to Rscripts and is then referenced in the Rmd. This is the advantage of only needing to update code once as opposed to updating both an Rscript and then the tutorial Rmd's inline code. This will also facilitate automated testing down the road if wanted.
+
+Referencing code requires a little bit of formatting in the Rscript. You will need to section off your code in the following format:
+```
+##----section_topic1----
+print('hello world')
+
+##----section_goodbye----
+print('goodbye world')
+
+##----averaging_random_numbers----
+mean(rnorm(10000))
+```
+
+You can call sections whatever you want, the important thing is that you preceed and follow up each section name with `----`. 
+
+After you have your Rscript formatted, let's say it is saved in a file `example.R`, you would need a chunk at the beginning of your Rmd that loads the Rscript.
+```{r,echo=F}
+knitr::read_chunk('example.R')
+```
+
+From there onward you can run the code in each of those sections by referencing it in the chunk options. For example, I can run the first and last sections with the following:
+
+```
+\```{r,section_topic1,eval=T}
+\```
+
+\```{r,averaging_random_numbers,eval=T}
+\```
+```
+
+```{r,section_topic1,eval=T}
+```
+
+```{r,averaging_random_numbers,eval=T}
+```
+
+
+
+## Boxes
+
+Orange and blue boxes are used in the tutorials to denote function descriptions (blue) or sections to interact with (blue). Making these boxes requires a little bit of prep. We need these at the beginning of any rmarkdown where we wish to have the boxes.
+
+```
+<style>
+div.func { background-color:#8DC6EF; border-radius: 5px; padding: 20px;}
+</style>
+
+<style>
+div.try { background-color:#F0B68D; border-radius: 5px; padding: 20px;}
+</style>
+
+```
+
+These commands just denote various options that we want for our boxes, now labeled `div.func` and `div.try`. 
+
+I usually populate these boxes like so:
+
+#### Try box
+```
+<div class = "try">
+### Try it out! Some task
+
+here is a description of some task followed by step by step guidelines
+
+1. Objective 1
+1. Objective 2
+2. Obkective 3
+
+Some probing questions asking for people to think about the things done at the various steps
+
+</div>
+<br></br>
+```
+Has the following output:
+<div class = "try">
+### Try it out! Some task
+
+here is a description of some task followed by step by step guidelines
+
+1. Objective 1
+1. Objective 2
+2. Obkective 3
+
+Some probing questions asking for people to think about the things done at the various steps
+
+</div>
+<br></br>
+
+#### Function box
+```
+<div class = "func">
+<details>
+  <summary> <font size="+2"> `functionName()` </font> </summary>
+ 
+General description of function.
+
+Arugmentions of function
+
+* $arg1$ Description of arg1
+* $arg2$ Description of arg2
+* $arg3$ Description of arg3
+
+If not trivial, a description of the output.
+
+* $\$out1$ Description of out1
+* $\$out2$ Description of out2
+* $\$out3$ Description of out3
+
+if nessecary, example code
+
+\```{r,eval=F}
+a<-function(arg1,arg2,arg3)
+a
+\```
+
+</details>
+</div>
+<br></br>
+```
+Has the following output:
+<div class = "func">
+<details>
+  <summary> <font size="+2"> `functionName()` </font> </summary>
+ 
+General description of function.
+
+Arugmentions of function
+
+* $arg1$ Description of arg1
+* $arg2$ Description of arg2
+* $arg3$ Description of arg3
+
+If not trivial, a description of the output.
+
+* $\$out1$ Description of out1
+* $\$out2$ Description of out2
+* $\$out3$ Description of out3
+
+if nessecary, example code
+
+```{r,eval=F}
+a<-function(arg1,arg2,arg3)
+a
+```
+
+</details>
+</div>
+<br></br>
+
+### Other fancy html/rmd things similar to boxes
+
+You can make collapsible info boxes like this: 
+
+```
+<details>
+<summary>**Name of Collapsible Box**</summary>
+<br>
+Info goes in here
+
+---
+
+</details>
+\
+
+```
+
+<details>
+<summary>**Name of Collapsible Box**</summary>
+<br>
+Info goes in here
+
+---
+
+</details>
+\
+
+You can also make clickable sections by adding some `tabset` commands after a section heading. Headings underneath the current heading level will appear as clickable buttons while using a heading that is the same level as our `tabset` will escape the button creation
+
+```
+### **Main Button Header**  {.tabset .tabset-fade .tabset-pills}
+
+#### Button 1
+
+Here's some info for button 1
+
+#### Button 2
+
+Button 2 Info
+
+####Button 3
+
+Here is information that will appear when I click button 3
+
+###Button 4
+
+This will not appear as a button
+
+
+```
+
+
+### **Main Button Header**  {.tabset .tabset-fade .tabset-pills}
+
+#### Button 1
+
+Here's some info for button 1
+
+#### Button 2
+
+Button 2 Info
+
+#### Button 3
+
+Here is information that will appear when I click button 3
+
+### Button 4
+
+This will not appear as a button
+
+
+

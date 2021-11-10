@@ -1,9 +1,9 @@
-
+## Tutorial_Skeleton
 
 ###Contents
-This file contains the contents for the Phylogenetic Regression
+This file contains the contents for the Tutorial_Skeleton
 
-You will find the tutorial labeled PhyloRegressionhtml here. 
+You will find the tutorial labeled Tutorial_Skeleton.html here. 
 
 
 You will find the following subdirectories here:
@@ -19,12 +19,7 @@ If following along with the code in this tutorial, we assume the working directo
 You will need the following R packages to run the tutorial:
 
 
-ape
-geiger
-nlme
-RRPP
-geomorph
-MASS
+
 
 
 ## Year to year maintenance 
