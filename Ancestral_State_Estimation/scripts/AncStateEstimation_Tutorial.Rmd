@@ -2,19 +2,14 @@
 title: "Ancestral State Estimation"
 author: "Dean Adams (dcadams@iastate.edu)"
 date: "`r Sys.Date()`"
-output: html_document
+output: 
+  html_document:
+    css: ../../Instructor_Materials/style/styles.css
 knit: (function(inputFile, encoding) {
   rmarkdown::render(inputFile, encoding = encoding, output_dir = "../") })
 ---
 
 
-<style>
-div.func { background-color:#8DC6EF; border-radius: 5px; padding: 20px;}
-</style>
-
-<style>
-div.try { background-color:#F0B68D; border-radius: 5px; padding: 20px;}
-</style>
 
 
 ```{r,echo=F}
@@ -40,17 +35,17 @@ Note, parts of this tutorial are based on and adapted from that of L. Revell: ht
 ### Download data files
 To run the analyses in this tutorial, please download the following files from our Git-course repository: 
 
-[Phylogeny1](https://eeob-macroevolution.github.io/EEOB-565X-Spring2018/practicals/TutorialData/anole.gp.tre)
+[Phylogeny1](https://eeob-macroevolution.github.io/Practicals/Phylo_Assoc_Discrete/data/anole.gp.tre)
 
-[Phylogeny2](https://eeob-macroevolution.github.io/EEOB-565X-Spring2018/practicals/TutorialData/anole.svl.tre)
+[Phylogeny2](https://eeob-macroevolution.github.io/Practicals/Phylo_Assoc_Discrete/data/anole.svl.tre)
 
-[Data1](https://eeob-macroevolution.github.io/EEOB-565X-Spring2018/practicals/TutorialData/anole.gp.csv)
+[Data1](https://eeob-macroevolution.github.io/Practicals/Phylo_Assoc_Discrete/data/anole.gp.csv)
 
-[Data2](https://eeob-macroevolution.github.io/EEOB-565X-Spring2018/practicals/TutorialData/anole.svl.csv)
+[Data2](https://eeob-macroevolution.github.io/Practicals/Phylo_Assoc_Discrete/data/anole.svl.csv)
 
 Additionally, The R-script for running the code found in this tutorial is found here:
 
-[RScript](https://eeob-macroevolution.github.io/EEOB-565X-Spring2018/practicals/TutorialData/AncStateEstimation.r)
+[RScript](https://eeob-macroevolution.github.io/Practicals/Phylo_Assoc_Discrete/scripts/AncStateEstimation.r)
 
 As before, on your local computer, place them in a folder named 'TutorialData', which is found in the same directory as this tutorial. 
 
@@ -134,7 +129,7 @@ Here we will try an ancestral state estimation with a different model for trait 
 2. perform ancestral state estimation using the all rates different matrix
     + How do rate estimates differ between the two models?
     + What is the likelihood of each state at the root of the phylogeny?
-3. Conduct a likelihood ratio test between the two models **Hint:** How many parameters does the 'ARD' model have? You may want to look at the rate matrix for help with this.
+3. Conduct a likelihood ratio test between the two models or compare their AICs to determine which model is a better fit. **Hint:** For the likelihood ratio test, how many parameters does the 'ARD' model have? You may want to look at the rate matrix for help with this.
     + Which model would you conclude is a better fit?
 4. Plot the ancestral state estimation on the phylogeny 
     + How does this compare to the previous visualization? Are any clades drastically different?
@@ -151,7 +146,7 @@ An alternative to ML approaches is to utilize a Bayesian perspective. Here, a Ma
 <details>
   <summary> <font size="+2"> `make.simmap()` </font> </summary>
  
-This function performs stochastic mapping using several different methods. Essentially, given a model for character evolution, it simulates histories under the model. The function has many parameters and modes, we will be using the "empirical" uses the following arguments
+This function performs stochastic mapping using several different methods. Essentially, given a model for character evolution, it simulates histories under the model. The function has many parameters and modes, we will be using the "empirical" mode that uses the following arguments:
 
 * $tree$
 * $x$ A factor or vector with character traits.
@@ -168,14 +163,16 @@ The function outputs a `simmap` object that lists how long each branch spent in 
 ```{r,simmap, eval=TRUE}
 ```
 
-Again, note that internal nodes are estimated as combinations of different states. This reflects the fact that no single state is 100% likely for those nodes.
+After making many simmaps we summarize by reporting the proportion of the time that each node is in a given state. Again, note that internal nodes are estimated as combinations of different states. This reflects the fact that no single state is 100% likely for those nodes.
 
 <div class = "try">
-#### Porgs revisited
+#### Try it out! Porgs Revisited
 
 We looked at Porgs in the Discrete Character Evolution tutorial, now we will look at them again and estimate ancestral states
 
-1. Read in the Porg phylogeny and character data. If you need to download them again, you can find them here.
+1. Read in the Porg phylogeny and character data. If you need to download them again, you can find them here:
+    + [Porg Tree](https://eeob-macroevolution.github.io/Practicals/Phylo_Assoc_Discrete/data/porg.tre)
+    + [Porg Data](https://eeob-macroevolution.github.io/Practicals/Phylo_Assoc_Discrete/data/porg_data.csv)
 2. Create an 'equal rates' rate matrix and all 'rates different' rate matrix for the porg data.
 3. use `ace()` to estimate ancestral states
     + What is the likelihood of each state at the root for each model
@@ -225,7 +222,7 @@ As shown by Martins and Hansen (1997), ML, SCP, and GLS yield identical ancestra
 Each approach gives the same result, how neat is that?
 
 <div class = "try">
-#### Ancestral state estimates of Anolis
+#### Try it out! Ancestral state estimates of Anolis
 
 1: Using the *Anolis* phylogeny and body size data, what is the estimated ancestral body size (`SVL`) at the **ROOT** of the phylogeny when using maximum likelihood?
 

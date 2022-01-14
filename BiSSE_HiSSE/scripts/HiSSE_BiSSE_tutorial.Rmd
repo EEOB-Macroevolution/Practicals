@@ -1,20 +1,15 @@
 ---
 title: "BiSSE and HiSSE in R"
 author: "Josh Justison"
-date: "7/1/2021"
-output: html_document
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    css: ../../Instructor_Materials/style/styles.css
 knit: (function(inputFile, encoding) {
   rmarkdown::render(inputFile, encoding = encoding, output_dir = "../") })
 ---
 
 
-<style>
-div.func { background-color:#8DC6EF; border-radius: 5px; padding: 20px;}
-</style>
-
-<style>
-div.try { background-color:#F0B68D; border-radius: 5px; padding: 20px;}
-</style>
 
 
 ```{r setup, include=FALSE}

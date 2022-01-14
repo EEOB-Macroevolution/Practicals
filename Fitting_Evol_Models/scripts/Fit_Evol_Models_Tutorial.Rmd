@@ -2,18 +2,12 @@
 title: "Fitting and Comparing Evolutionary Models: Continuous Data"
 author: "Dean Adams (dcadams@iastate.edu)"
 date: "`r Sys.Date()`"
-output: html_document
+output: 
+  html_document:
+    css: ../../Instructor_Materials/style/styles.css
 knit: (function(inputFile, encoding) {
   rmarkdown::render(inputFile, encoding = encoding, output_dir = "../") })
 ---
-
-<style>
-div.func { background-color:#8DC6EF; border-radius: 5px; padding: 20px;}
-</style>
-
-<style>
-div.try { background-color:#F0B68D; border-radius: 5px; padding: 20px;}
-</style>
 
 
 
@@ -41,15 +35,15 @@ All of these questions can be addressed by fitting different evolutionary models
 ### Download data files
 Today we will use data from the following files: 
 
-[Phylogeny](https://eeob-macroevolution.github.io/EEOB-565X-Spring2018/practicals/TutorialData/anole.gp.tre)
+[Phylogeny](https://eeob-macroevolution.github.io/Practicals/Fitting_Evol_Models/data/anole.gp.tre)
 
-[Data1](https://eeob-macroevolution.github.io/EEOB-565X-Spring2018/practicals/TutorialData/anole.gp.csv)
+[Data1](https://eeob-macroevolution.github.io/Practicals/Fitting_Evol_Models/data/anole.gp.csv)
 
-[Data2](https://eeob-macroevolution.github.io/EEOB-565X-Spring2018/practicals/TutorialData/anole.svl2.csv)
+[Data2](https://eeob-macroevolution.github.io/Practicals/Fitting_Evol_Models/data/anole.svl2.csv)
 
 Additionally, The R-script for running the code found in this tutorial is found here:
 
-[RScript](https://eeob-macroevolution.github.io/EEOB-565X-Spring2018/practicals/TutorialData/FitEvolModels.r)
+[RScript](https://eeob-macroevolution.github.io/Practicals/Fitting_Evol_Models/scripts/FitEvolModels.r)
 
 As before, on your local computer, place them in a folder named 'TutorialData', which is found in the same directory as this tutorial. 
 
@@ -153,7 +147,7 @@ Another approach is to use stochastic mapping, which is used here. We can fit mu
 <div class = "func">
 
 <details>
-  <summary> <font size="+2"> `fitContinuous()` </font> </summary>
+  <summary> <font size="+2"> `OUwie()` </font> </summary>
  
 This function fits various OU models to trees. We'll primarily be using this function to model regime shifts, each with their own OU parameters and dynamics, as such we won't go over all the parameters but only the ones relevant for our goals
 
@@ -183,9 +177,26 @@ This function returns the fit model with parameter estimates and summary statist
 
 ```
 
+<div class = "try">
+### Try it out! OUwie over many ancestral state histories
+
+Remember that the ancestral state estimation we maded with the `make.simmap()` function only recreates one possible state history given our discrete trait evolution model when in reality there are infinitely many histories that could generate our data! Here you will try to fit the various models in OUwie with different simmaps to see whether our results are robust to different ancestral state estimates.
+
+1. Create 100 simmaps with ancestral state histories using the `make.simmap()` function. **NOTE** you can do this either in a `for` loop or by modifying the `nsim` argument in the `make.simmap()` function  itself.
+2. For each simmap:
+  + Use the `OUwie()` function to fit the 'BM1', 'OU1', and 'OUM` models to the simmap
+  + Record the AIC for each fit model
+3. Make histograms of the AIC for each model. Which model on average fits the best over all the simmaps? Which model is the most robust to different evolutionary histories (where do we see the smallest variation in AIC)?
+
+</div>
+<br></br>
+
+
 #### **BMM: Multi-group BM model**
 
 Alternatively, there may be multiple rates across the phylogeny. For example, one may wish to test the hypothesis that trait evolution is faster in one group as compared to another (e.g., Do traits evolve faster in island taxa than mainland taxa?). Again groups are assigned, BM1 model and BMM models are fit to the data, and compared using LRT and AIC.
+
+As was done for OU models, we can fit the multi-BM model with the `OUwie()` function by using the argument `model="BMS"` (in this case, `BMS` refers to Brownian Motion for each State).
 
 
 
@@ -194,6 +205,9 @@ Alternatively, there may be multiple rates across the phylogeny. For example, on
 
 #### **Exploratory Models: Identifying Rate Shifts**
 The above multi-group methods (OUM and BMM) are * a priori* methods, in that groups are pre-defined by the evolutionary biologist, and hypotheses tested based on those pre-specified groups. An alternative is to mine the data to identify regions on the phylogeny where putative rate shifts are most evident. Two MCMC Bayesian approaches have been proposed for this (Revell et al. 2012: Eastman et al. 2011).  **These methods are highly exploratory, and are found in the functions 'evol.rate.mcmc' in *phytools*, and the function 'rjmcmc.bm' in *geiger* **.
+
+```{r,Rate_shifts, eval=TRUE}
+```
 
 ## Skull Thickness of Fizzgigs
 
@@ -204,7 +218,9 @@ The above multi-group methods (OUM and BMM) are * a priori* methods, in that gro
 
 We're going to try and fit various evolutionary models to a phylogenetic tree of Fizzgigs to see how their bite radii might have evolved
 
-1. Use `read.tree()` to read in the tree titled `fizzgig.tre`. This file can be found in the data folder of this tutorial
+1. Use `read.tree()` to read in the tree titled `fizzgig.tre`. This file can be found in the data folder of this tutorial:
+    +  [Phylogeny](https://eeob-macroevolution.github.io/Practicals/Fitting_Evol_Models/data/fizzgig.tre)
+    +  [Trait Data](https://eeob-macroevolution.github.io/Practicals/Fitting_Evol_Models/data/fizzgig_data.csv)
 2. Use the `read.csv()` function to read in the data set called `fizzgig_data.csv`. **NOTE** there are two columns in this data set, one labeled `bite` that contains the bit radii and another labeled `type`. For now we'll only need the `bite` information
 3. use `fitContinuous()` to fit various evolutionary models and compare their AICs. Which model fit best? What are the maximum likelihood estimates for that model?
 

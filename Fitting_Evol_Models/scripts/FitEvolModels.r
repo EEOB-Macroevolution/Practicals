@@ -3,6 +3,7 @@
 ## ----read_data----
 library(phytools)
 library(geiger)
+library(OUwie)
 
 tree<-read.tree("../data/anole.gp.tre",tree.names=T)
 group<-read.csv('../data/anole.gp.csv', row.names=1, header=TRUE,colClasses=c('factor'))
@@ -42,7 +43,7 @@ fit.BM1
 
 ##----OU_sim----
 
-#from Lars Shmitz tutorial: http://schmitzlab.info/BMandOU.html 
+#from Lars Shmitz tutorial: http://schmitzlab.info/BMandOU.html
 OU.sim <- function(n, theta, alpha, sigma,x0){
   dw  <- rnorm(n, 0)
   x <- c(x0)
@@ -79,7 +80,7 @@ fit.OU1$opt$aic
 ## ----evol_models_geiger----
 fit.BMtrend<-fitContinuous(tree, svl, model="trend")   #Brownian motion with a trend
 fit.EB<-fitContinuous(tree, svl, model="EB")   #Early-burst model
-fit.lambda<-fitContinuous(tree, svl, 
+fit.lambda<-fitContinuous(tree, svl,
         bounds = list(lambda = c(min = exp(-5), max = 2)), model="lambda")  #Lambda model
 options(warn=-1)
 fit.K<-fitContinuous(tree, svl, model="kappa")   #Early-burst model
@@ -91,14 +92,15 @@ c(fit.BM1$opt$aic,fit.BMtrend$opt$aic,fit.EB$opt$aic,fit.lambda$opt$aic,fit.OU1$
 
 
 ## ----OUwie_model_basic----
-library(OUwie)
+
 data<-data.frame(Genus_species=names(svl),Reg=gp,X=svl)  #input data.frame for OUwie
 tree.simmap<-make.simmap(tree,gp)  # perform & plot stochastic maps (we would normally do this x100)
+plot(tree.simmap,type='fan')
 fitBM1<-OUwie(tree.simmap,data,model="BM1",simmap.tree=TRUE)
-fitOU1<-OUwie(tree.simmap,data,model="OU1",simmap.tree=TRUE) 
+fitOU1<-OUwie(tree.simmap,data,model="OU1",simmap.tree=TRUE)
 fitOUM<-OUwie(tree.simmap,data,model="OUM",simmap.tree=TRUE)
 
-fitBM1  
+fitBM1
 fitOU1
 fitOUM  #OUM is strongly preferred (examine AIC)
 
@@ -114,9 +116,11 @@ fitOUM  #OUM is strongly preferred (examine AIC)
 
 # 3A: BM1 vs BMM: Comparing evolutionary rates
 tree.simmap<-make.simmap(tree,gp)  # perform & plot stochastic maps (we would normally do this x100)
-BMM.res<-brownie.lite(tree = tree.simmap,x = svl,test="simulation")
+BMM.res<-OUwie(tree.simmap,data,model="BMS",simmap.tree = TRUE)
 BMM.res
 
+
+## ----Rate_shifts----
 # 3B: Identifying rate shifts on phylogeny
   #Bayesian MCMC: single rate shift (Revell et al. 2012: Evol.)
 BM.MCMC<-evol.rate.mcmc(tree=tree,x=svl, quiet=TRUE)
@@ -133,8 +137,7 @@ r <- paste(sample(letters,9,replace=TRUE),collapse="")
 rjmcmc.bm(phy=tree, dat=svl, prop.width=1.5, ngen=20000, samp=500, filebase=r, simple.start=TRUE, type="rbm")
 outdir <- paste("relaxedBM", r, sep=".")
 ps <- load.rjmcmc(outdir)
-dev.new()
-plot(x=ps, par="shifts", burnin=0.25, legend=TRUE, show.tip=FALSE, edge.width=2)
+plot(x=ps, par="shifts", burnin=0.25, legend=TRUE, show.tip=FALSE, edge.width=2,type='fan')
 
 
 
@@ -150,4 +153,4 @@ plot(TreeLambda5,show.tip.label = FALSE)
 plot(TreeLambda0,show.tip.label = FALSE)
 par(mfcol=c(1,1))
 
-                
+

@@ -11,7 +11,7 @@
 
 <meta name="author" content="Dean Adams (dcadams@iastate.edu)" />
 
-<meta name="date" content="2021-11-10" />
+<meta name="date" content="2022-01-10" />
 
 <title>Multivariate Phylogenetic Comparative Methods</title>
 
@@ -59,6 +59,7 @@ if (window.hljs) {
 
 
 
+<link rel="stylesheet" href="data:text/css,div%2Efunc%20%7B%20background%2Dcolor%3A%238DC6EF%3B%20border%2Dradius%3A%205px%3B%20padding%3A%2020px%3B%7Ddiv%2Etry%20%7B%20background%2Dcolor%3A%23F0B68D%3B%20border%2Dradius%3A%205px%3B%20padding%3A%2020px%3B%7D" type="text/css" />
 
 
 
@@ -167,17 +168,11 @@ pre code {
 
 <h1 class="title toc-ignore">Multivariate Phylogenetic Comparative Methods</h1>
 <h4 class="author">Dean Adams (<a href="mailto:dcadams@iastate.edu" class="email">dcadams@iastate.edu</a>)</h4>
-<h4 class="date">2021-11-10</h4>
+<h4 class="date">2022-01-10</h4>
 
 </div>
 
 
-<style>
-div.func { background-color:#8DC6EF; border-radius: 5px; padding: 20px;}
-</style>
-<style>
-div.try { background-color:#F0B68D; border-radius: 5px; padding: 20px;}
-</style>
 <div id="overview" class="section level3">
 <h3><strong>Overview</strong></h3>
 <p>Today we examine how one can perform phylogenetic comparative analyses on multivariate datasets. For this, the phenotypic data (Y) is a N x p matrix of phenotypic values for N species, across p trait dimensions. These p-dimensions could be a set of univariate traits (e.g., length, width, height, etc.) or they could represent a multi-dimensional trait encoded by multiple numbers (e.g., shape from geometric morphometric methods). The goal is to evaluate patterns in the response variables (Y) while conditioning the data on the phylogeny. In other words, we wish to perform macroevolutionary analyses via phylogenetic comparative methods, but do so on multivariate data.</p>

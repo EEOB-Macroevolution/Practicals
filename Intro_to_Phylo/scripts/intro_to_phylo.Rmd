@@ -1,15 +1,13 @@
 ---
 title: "Practical: Introduction to Phylogenetics in R"
-output: html_document
+output: 
+  html_document:
+    css: ../../Instructor_Materials/style/styles.css
+knit: (function(inputFile, encoding) {
+  rmarkdown::render(inputFile, encoding = encoding, output_dir = "../") })
 ---
 
-<style>
-div.func { background-color:#8DC6EF; border-radius: 5px; padding: 20px;}
-</style>
 
-<style>
-div.try { background-color:#F0B68D; border-radius: 5px; padding: 20px;}
-</style>
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)

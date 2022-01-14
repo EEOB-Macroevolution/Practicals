@@ -3,18 +3,12 @@ title: "Discrete Trait Phylogenetic Association"
 author: "Dean Adams (dcadams@iastate.edu)"
 date: "`r Sys.Date()`"
 output: 
-  html_document
+  html_document:
+    css: ../../Instructor_Materials/style/styles.css
 knit: (function(inputFile, encoding) {
   rmarkdown::render(inputFile, encoding = encoding, output_dir = "../") })
 ---
 
-<style>
-div.func { background-color:#8DC6EF; border-radius: 5px; padding: 20px;}
-</style>
-
-<style>
-div.try { background-color:#F0B68D; border-radius: 5px; padding: 20px;}
-</style>
 
 
 ```{r,echo=F}
@@ -38,13 +32,13 @@ Today we continue our investigation of correlated trait evolution, and implement
 ### Download data files
 To run the analyses in this tutorial, please download the following files from our Git-course repository: 
 
-[Phylogeny](https://eeob-macroevolution.github.io/EEOB565X-Spring2020/practicals/TutorialData/tree.64.tre)
+[Phylogeny](https://eeob-macroevolution.github.io/Practicals/Phylo_Assoc_Discrete/data/tree.64.tre)
 
-[Data](https://eeob-macroevolution.github.io/EEOB565X-Spring2020/practicals/TutorialData/DiscreteData.csv)
+[Data](https://eeob-macroevolution.github.io/Practicals/Phylo_Assoc_Discrete/data/DiscreteData.csv)
 
 Additionally, The R-script for running the code found in this tutorial is found here:
 
-[RScript](https://eeob-macroevolution.github.io/EEOB565X-Spring2020/practicals/PhyloAssocDiscrete.r)
+[RScript](https://eeob-macroevolution.github.io/Practicals/Phylo_Assoc_Discrete/scripts/PhyloAssocDiscrete.r)
 
 As before, on your local computer, place them in a folder named 'TutorialData', which is found in the same directory as this tutorial. 
 
@@ -70,7 +64,7 @@ One might be tempted to simply perform a Chi-square test on these data. However,
 
 Before we perform our comparative analysis we must read in our data and our phylogeny into R, and 'link' them up by pruning them relative to one another so that all taxa in the tree are found in the data matrix and vice versa. Recall that for this to work properly, the rownames of our data matrix (or 'names' of a vector if a single variable) must match the names of the taxa at the tips of the phylogeny. These are found as: `phy$tip.label`. It may be helpful to view previous tutorials if you need help reading in and matching data.
 
-1. Load the `gieger` and `phytools` package with `library()`.
+1. Load the `geiger`, `phytools`, and `corHMM` package with `library()`.
 1. Use `read.tree()` to read in the tree titled `tree.64.tre`. This file can be found in the data folder of this tutorial
 2. Use the `read.csv()` function to read in the discrete trait data called `DiscreteData.csv`
 3. Use `treedata()` to match the phylogeny tips to the trait data. Be sure to set the `sort` argument to `TRUE`.
@@ -140,7 +134,7 @@ This creates a rate matrix for the data to describe the discrete character evolu
 
 
 * $data$ a data.frame containing species information. The first column must be species names matching the phylogeny. Additional columns contain discrete character data. There will be an example of how to format trait information to this format below
-* $model$ One of "ARD", "SYM", or "ER". ARD: all rates differ. SYM: rates between any two states do not differ (i.e $A\rightarrow B$ equals $B\rightarrow A$. ER: all rates are equal.
+* $model$ One of "ARD", "SYM", or "ER". ARD: all rates differ. SYM: rates between any two states do not differ (i.e $A\rightarrow B$ equals $B\rightarrow A$). ER: all rates are equal.
 
 This function returns a list of objects:
 
@@ -162,7 +156,7 @@ We can then view the models we made by simply typing out the variables. We can s
 
 We can also use `plotMkmodel()` to make a ball and stick visualization of the transition matrix.
 
-```{r, single_trait_plot,eval=T}
+```{r, single_trait_plot,eval=T,warning=F}
 ```
 
 After assessing that we've set up the models we wanted we can fit and compare the models with `corHMM()`
@@ -186,7 +180,7 @@ This function returns the fit model with parameter estimates and summary statist
 * $\$AIC$ Akaike information criterion.
 * $\$AICc$ Akaike information criterion corrected for sample size.
 * $\$solution$ a matrix containing the maximum likelihood estimates of the transition rates. Note that the rate classes are ordered from slowest (R1) to fastest (Rn) with respect to state 0.
-* $\$index.mat$	The indices of the parameters being estimated are returned. This also is a way to allow the estimation of transition rates for parameters not oberved in the dataset. Say you have 2 traits X and Y, where the combinations 00, 01, and 11 are observed (10 is not). A 4 by 4 index matrix could be used to force 10 into the model.
+* $\$index.mat$	The indices of the parameters being estimated are returned. This also is a way to allow the estimation of transition rates for parameters not observed in the data set. Say you have 2 binary traits X and Y, where the combinations 00, 01, and 11 are observed (10 is not). A 4 by 4 index matrix could be used to force 10 into the model.
 
 </details>
 </div>
@@ -216,17 +210,17 @@ Which model fits better in each scenario? What are the transition rates of the b
 #### 2: Two trait analysis: Trait association
 Having examined questions concerning rates of change between states of a single trait, we can now return to the question of correlated evolution. Here we wish to know whether two traits are associated phylogenetically. For continuous traits, this is akin to phylogenetic regression or correlation. However, for discrete traits, this question becomes one of evaluating transition rates between sets of trait changes.  
 
-In essence, this is a generalization of the rate matrix for a single trait, only now we consider two traits. Here, we have a 4 X 4 rate matrix describing the transition rates between character states for 2 traits  (Fig. 4).  
+In essence, this is a generalization of the rate matrix for a single trait, only now we consider two traits. Here, we have a 4 X 4 rate matrix describing the transition rates between character states for 2 traits  (Fig. 4). We can see some zeros in the rate matrix for certain transitions, this is because we assume that only one trait changes at a given time (We assume $0\_0 \leftrightarrow 1\_1$ or $0\_1 \leftrightarrow 1\_0$ never occurs). 
 
 ![Fig 4. Rate matrix for two traits.](../figs/TwoTraitTransRate.png)
 
 To evaluate trait associations we now fit two models. The first is our 'independent' model. Here transition rates are the same regardless of trait state (in other words, the rate is independent of the row or column in the matrix). For binary traits, we can specify an 'independent mode' by giving equal rates across the matrix. 
 
-The second model is describes correleted (dependent) trait evolution. Here the trait changes depend on the initial state. This model has more free parameters, as all transition rates are permitted to differ from one another. One then fits the data to the phylogeny under this second model. 
+The second model is describes correlated (dependent) trait evolution. Here the trait changes depend on the initial state. This model has more free parameters, as all transition rates are permitted to differ from one another. One then fits the data to the phylogeny under this second model. 
 
 We create and fit the models just like we did for the single trait case, however, this time our data frame will contain two traits instead of just one.
 
-```{r,two_trait, eval = T}
+```{r,two_trait, eval = T,warning=F}
 ```
 
 We have two traits so we should have a $4\times4$ transition matrix but we don't see that when visualizing, why not? This actually has to do with something sneaky that happens when we make our transition matrix. Since the states of two traits match each other perfectly in that we only ever see $0\_1$ or $1\_0$, the two traits effectively get collapsed into one combined trait with two states. We can fix this issue by making our function think all four trait combinations are present
@@ -290,17 +284,19 @@ Here we see that there is strong support for directional dependent evolution. Th
 
 [Porgs](https://www.youtube.com/watch?v=tNtNIqL8omc) of the Star Wars Universe are small sea-dwelling birds that are native to the planet [Anch-To](https://starwars.fandom.com/wiki/Ahch-To). They are a hypercurious species that roosts on cliffs and evolved from seabirds.
 
-Many porg species differ by their presence of webbed feet. These webbed feet help the porgs navigate water better and allow them to hunt many different types of sea creatures. Their land dwelling unwebbed-foot relatives typically fewer niches to exploit as the terrestrial portions of Anch-To are largely devoid of life. These porgs typically rely on eating bugs in small crevices between rocks. 
+Many porg species differ by their presence of webbed feet. These webbed feet help the porgs navigate water better and allow them to hunt many different types of sea creatures. Their land dwelling unwebbed-foot relatives typically have fewer niches to exploit as the terrestrial portions of Anch-To are largely devoid of life. These porgs typically rely on eating bugs in small crevices between rocks. 
 Additionally, some porg species have long proboscis-like beaks while others are entirely beakless. Porgs use their beaks to spear fish or reach food in narrow spaces. The beakless porgs use their lack of beak to fit various crustaceans in their strong mouths, cracking their hard exteriors for sustenance.   
 
 
 <div class = "try">
-### Try it out! Porg discrete character Evolution
+### Try it out! Porg Discrete Character Evolution
 
-Let's analyze the evolution of beaks and webbed feet in porgs. Specifically, we might be interested in the transition rates between states. Do we see equal rates? Do we see transitions in both directions? Does have webbed feet seem to change the dynamics of transitioning between beaked state and a beakless state?
+Let's analyze the evolution of beaks and webbed feet in porgs. Specifically, we might be interested in the transition rates between states. Do we see equal rates? Do we see transitions in both directions? Does having webbed feet seem to change the dynamics of transitioning between beaked state and a beakless state?
 
 
 1. Load the porg phylogeny and trait data.
+    + [Porg Tree](https://eeob-macroevolution.github.io/Practicals/Phylo_Assoc_Discrete/data/porg.tre)
+    + [Porg Data](https://eeob-macroevolution.github.io/Practicals/Phylo_Assoc_Discrete/data/porg_data.csv)
 2. plot the data on the tree.
     + From looking at the trait data plotted, would you guess that the traits evolve in a coordinated manner? Why or why not?
     + Does it look like there are repeated instances of the various transitions? Do we have psuedoreplication issues?

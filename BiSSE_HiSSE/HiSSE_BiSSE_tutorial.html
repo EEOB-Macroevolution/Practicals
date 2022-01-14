@@ -11,6 +11,7 @@
 
 <meta name="author" content="Josh Justison" />
 
+<meta name="date" content="2022-01-11" />
 
 <title>BiSSE and HiSSE in R</title>
 
@@ -58,6 +59,7 @@ if (window.hljs) {
 
 
 
+<link rel="stylesheet" href="data:text/css,div%2Efunc%20%7B%20background%2Dcolor%3A%238DC6EF%3B%20border%2Dradius%3A%205px%3B%20padding%3A%2020px%3B%7Ddiv%2Etry%20%7B%20background%2Dcolor%3A%23F0B68D%3B%20border%2Dradius%3A%205px%3B%20padding%3A%2020px%3B%7D" type="text/css" />
 
 
 
@@ -166,17 +168,11 @@ pre code {
 
 <h1 class="title toc-ignore">BiSSE and HiSSE in R</h1>
 <h4 class="author">Josh Justison</h4>
-<h4 class="date">7/1/2021</h4>
+<h4 class="date">2022-01-11</h4>
 
 </div>
 
 
-<style>
-div.func { background-color:#8DC6EF; border-radius: 5px; padding: 20px;}
-</style>
-<style>
-div.try { background-color:#F0B68D; border-radius: 5px; padding: 20px;}
-</style>
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
 <p>Plants have complex reproductive systems that can roughly be broken into two categories: self compatible (SC) plants that are hermaphrodidic and can self-fertilize and self incompatible (SI) where plants reject their own pollen for reproduction. Self compatability has arisen multiple times across plants and both modes of reproduction are roughly equally abundant. It was hypothesized that SC plants may experience increased levels of inbreeding depression, and consequently, higher rates of extinction than their SI counterparts, making SI plants diversify more quickly than SC plants. Interestingly, Goldberg and Igic used models of trait-dependent speciation and extinction to find that SI plants diversify at higher rates than SC plants.</p>
@@ -211,13 +207,10 @@ div.try { background-color:#F0B68D; border-radius: 5px; padding: 20px;}
 install.packages(&quot;hisse&quot;)</code></pre>
 <pre class="r"><code>##set the seed for reproducibility
 set.seed(9177207) ##The exponent of the largest known repunit prime. ((10^9177207)-1)/9 is the prime
-library(diversitree)</code></pre>
-<pre><code>## Loading required package: ape</code></pre>
-<pre class="r"><code>library(hisse)</code></pre>
+library(diversitree)
+library(hisse)</code></pre>
 <pre><code>## Loading required package: deSolve</code></pre>
-<pre><code>## Loading required package: GenSA</code></pre>
 <pre><code>## Loading required package: subplex</code></pre>
-<pre><code>## Loading required package: nloptr</code></pre>
 </div>
 <div id="the-bisse-model" class="section level2">
 <h2>The BiSSE model</h2>
@@ -263,26 +256,22 @@ tree_bisse</code></pre>
 ## Rooted; includes branch lengths.</code></pre>
 <p>As you can see we have a phylogeny with 75 tips. As always with a phylogeny, we can use the <code>$</code> operator to look at the various components of our phylogeny. However, in the case of our simulation you can notice there are a few extra components related to the simulation and information about the trait evolution.</p>
 <pre class="r"><code>names(tree_bisse) ##See which components exist for our simulated phylogeny.</code></pre>
-<pre><code>##  [1] &quot;edge&quot;        &quot;Nnode&quot;       &quot;tip.label&quot;   &quot;tip.state&quot;   &quot;node.label&quot; 
-##  [6] &quot;node.state&quot;  &quot;edge.length&quot; &quot;orig&quot;        &quot;hist&quot;        &quot;edge.state&quot;</code></pre>
+<pre><code>##  [1] &quot;edge&quot;        &quot;Nnode&quot;       &quot;tip.label&quot;   &quot;tip.state&quot;   &quot;node.label&quot;  &quot;node.state&quot;  &quot;edge.length&quot; &quot;orig&quot;       
+##  [9] &quot;hist&quot;        &quot;edge.state&quot;</code></pre>
 <p>Perhaps of most note we can see a component called <code>tip.state</code>, this tells us which of the two states each tip is in. This is the type of data that researchers will have when trying to fit these types of models on a phylogeny.</p>
 <pre class="r"><code>tree_bisse$tip.state</code></pre>
-<pre><code>##   sp9  sp11  sp12  sp13  sp15  sp16  sp17  sp18  sp19  sp20  sp21  sp22  sp23 
-##     0     1     0     0     0     0     0     1     1     1     1     1     1 
-##  sp26  sp27  sp28  sp29  sp30  sp31  sp32  sp33  sp35  sp36  sp37  sp38  sp39 
-##     0     1     0     1     1     0     1     1     1     1     0     1     1 
-##  sp40  sp41  sp42  sp43  sp44  sp45  sp46  sp47  sp48  sp49  sp50  sp51  sp52 
-##     1     0     1     1     1     1     1     1     1     1     1     1     1 
-##  sp53  sp54  sp55  sp56  sp57  sp58  sp59  sp60  sp61  sp62  sp63  sp64  sp65 
-##     0     1     0     1     1     1     1     1     1     1     1     1     1 
-##  sp66  sp67  sp68  sp69  sp70  sp71  sp72  sp73  sp74  sp75  sp76  sp77  sp78 
-##     1     1     1     1     1     1     1     1     1     1     1     1     1 
-##  sp79  sp80  sp81  sp82  sp83  sp84  sp85  sp86  sp87  sp88  sp89  sp90  sp91 
-##     1     1     1     1     1     1     1     1     0     1     0     1     1 
-##  sp92  sp93  sp94  sp95  sp96  sp97  sp98  sp99 sp100 sp101 sp102 sp103 sp104 
-##     1     1     1     1     1     1     1     1     1     1     1     1     1 
-## sp105 sp106 sp107 sp108 sp109 sp110 sp111 sp112 sp113 
-##     1     1     1     0     0     1     1     1     1</code></pre>
+<pre><code>##   sp9  sp11  sp12  sp13  sp15  sp16  sp17  sp18  sp19  sp20  sp21  sp22  sp23  sp26  sp27  sp28  sp29  sp30  sp31 
+##     0     1     0     0     0     0     0     1     1     1     1     1     1     0     1     0     1     1     0 
+##  sp32  sp33  sp35  sp36  sp37  sp38  sp39  sp40  sp41  sp42  sp43  sp44  sp45  sp46  sp47  sp48  sp49  sp50  sp51 
+##     1     1     1     1     0     1     1     1     0     1     1     1     1     1     1     1     1     1     1 
+##  sp52  sp53  sp54  sp55  sp56  sp57  sp58  sp59  sp60  sp61  sp62  sp63  sp64  sp65  sp66  sp67  sp68  sp69  sp70 
+##     1     0     1     0     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1 
+##  sp71  sp72  sp73  sp74  sp75  sp76  sp77  sp78  sp79  sp80  sp81  sp82  sp83  sp84  sp85  sp86  sp87  sp88  sp89 
+##     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     0     1     0 
+##  sp90  sp91  sp92  sp93  sp94  sp95  sp96  sp97  sp98  sp99 sp100 sp101 sp102 sp103 sp104 sp105 sp106 sp107 sp108 
+##     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     0 
+## sp109 sp110 sp111 sp112 sp113 
+##     0     1     1     1     1</code></pre>
 <p>Some of these extra components from the simulation also give us historical information about which state past lineages were in. We can visualize the historical states with the code below. Here edges in state <span class="math inline">\(0\)</span> will be shown in red, and edges in state <span class="math inline">\(1\)</span> in blue while the colored dots on the right denote the state of extant lineages.</p>
 <pre class="r"><code>treehistory = history.from.sim.discrete(tree_bisse, 0:1)
 plot(treehistory, tree_bisse, cols = c(&quot;red&quot;, &quot;blue&quot;))</code></pre>
@@ -327,13 +316,12 @@ plot(treehistory, tree_bisse, cols = c(&quot;red&quot;, &quot;blue&quot;))</code
 ##      - root.p [NULL]: Vector of root state probabilities
 ##      - intermediates [FALSE]: Also return intermediate values?
 ##   * Phylogeny with 100 tips and 99 nodes
-##      - Taxa: sp9, sp11, sp12, sp13, sp15, sp16, sp17, sp18, sp19, ...
+##      - Taxa: sp9, sp11, sp12, sp13, sp15, sp16, sp17, sp18, sp19, sp20, sp21, sp22, sp23, sp26, ...
 ##   * References:
 ##      - Maddison et al. (2007) doi:10.1080/10635150701607033
 ##      - FitzJohn et al. (2009) doi:10.1093/sysbio/syp067
 ## R definition:
-## function (pars, condition.surv = TRUE, root = ROOT.OBS, root.p = NULL, 
-##     intermediates = FALSE)</code></pre>
+## function (pars, condition.surv = TRUE, root = ROOT.OBS, root.p = NULL, intermediates = FALSE)</code></pre>
 <p>From there we can try inputting some parameter values to get a likelihood. <strong>Note:</strong> the function returns a log-likelihood so we will be getting negative numbers, this avoids floating point error associated with representing small numbers on a computer.</p>
 <pre class="r"><code>bisse_model(c(1.0, 4.0, 0.5, 0.5, 0.2, 0.8))</code></pre>
 <pre><code>## [1] -27.90917</code></pre>
@@ -494,12 +482,10 @@ null_extinction_fraction &lt;- c(1,1,2,2)</code></pre>
 ## 
 ## Model parameters: 
 ## 
-##   turnover0A   turnover1A        eps0A        eps1A        q0A1A        q1A0A 
-## 1.123582e+00 1.123582e+00 2.162139e-09 2.162139e-09 2.364026e-01 2.063528e-09 
-##        q0A0B        q1A1B   turnover0B   turnover1B        eps0B        eps1B 
-## 7.854613e-01 7.854613e-01 9.884165e+00 9.884165e+00 5.915379e-01 5.915379e-01 
-##        q0B1B        q1B0B        q0B0A        q1B1A 
-## 2.364026e-01 2.063528e-09 7.854613e-01 7.854613e-01</code></pre>
+##   turnover0A   turnover1A        eps0A        eps1A        q0A1A        q1A0A        q0A0B        q1A1B   turnover0B 
+## 1.123582e+00 1.123582e+00 2.162139e-09 2.162139e-09 2.364026e-01 2.063528e-09 7.854613e-01 7.854613e-01 9.884165e+00 
+##   turnover1B        eps0B        eps1B        q0B1B        q1B0B        q0B0A        q1B1A 
+## 9.884165e+00 5.915379e-01 5.915379e-01 2.364026e-01 2.063528e-09 7.854613e-01 7.854613e-01</code></pre>
 <p>We can now compare our <code>null_hisse</code> model to our previous <code>incorrect_bisse</code> and <code>null_incorrect_bisse models</code>.</p>
 <pre class="r"><code>null_hisse$AIC</code></pre>
 <pre><code>## [1] 46.30257</code></pre>
