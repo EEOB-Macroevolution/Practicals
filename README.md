@@ -6,14 +6,13 @@ GitHub pages are turned on for this repository. So to link to any file, you just
 
 In this repo you will find all of the materials related to practicals for EEOB565X. The materials are divided by macroevolutionary topic. These topics include:
 * [**Onboarding**](https://eeob-macroevolution.github.io/Practicals/Onboarding/Setting_up_R_Rstudio.html) to R, Rsutdio, and the tutorials themselves
-* **An Introduction to R and Phylogenetics in R**
-* **Phylogenetic Inference**
-* **State Dependent Diversification**
-* **Phylogenetic Regression**
-* **Phylogenetic Association of Discrete Characters**
-* **Ancestral State Estimation**
-* **Fitting Evolutionary Models**
-* **Multivariate Phylogenetic Comparative Methods**
+* [**An Introduction to R and Phylogenetics in R**](https://eeob-macroevolution.github.io/Practicals/Intro_to_Phylo/intro_to_phylo.html)
+* [**Phylogenetic Association of Discrete Characters**](https://eeob-macroevolution.github.io/Practicals/Phylo_Assoc_Discrete/Phylo_Assoc_Discrete_Tutorial.html)
+* [**Phylogenetic Regression**](https://eeob-macroevolution.github.io/Practicals/Phylo_Regression/Phylo_Regression_Tutorial.html)
+* [**Ancestral State Estimation**](https://eeob-macroevolution.github.io/Practicals/Ancestral_State_Estimation/AncStateEstimation_Tutorial.html)
+* [**State Dependent Diversification**](https://eeob-macroevolution.github.io/Practicals/BiSSE_HiSSE/HiSSE_BiSSE_tutorial.html)
+* [**Fitting Evolutionary Models**](https://eeob-macroevolution.github.io/Practicals/Fitting_Evol_Models/Fit_Evol_Models_Tutorial.html)
+* [**Multivariate Phylogenetic Comparative Methods**](https://eeob-macroevolution.github.io/Practicals/MultivariatePCMs/MultivariatePCM_Tutorial.html)
 
 ### Folder Structure
 
