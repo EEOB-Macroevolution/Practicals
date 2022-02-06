@@ -5,7 +5,7 @@ GitHub pages are turned on for this repository. So to link to any file, you just
 ## Topics Covered
 
 In this repo you will find all of the materials related to practicals for EEOB565X. The materials are divided by macroevolutionary topic. These topics include:
-* **Onboarding** to R, Rsutdio, and the tutorials themselves
+* [**Onboarding**](https://eeob-macroevolution.github.io/Practicals/Onboarding/Setting_up_R_Rstudio.html) to R, Rsutdio, and the tutorials themselves
 * **An Introduction to R and Phylogenetics in R**
 * **Phylogenetic Inference**
 * **State Dependent Diversification**
