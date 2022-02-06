@@ -1,5 +1,5 @@
 ---
-title: "Untitled"
+title: "Getting Started with R for Macroevolution"
 author: "Josh Justison"
 date: "`r Sys.Date()`"
 output: html_document
@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Downloading R
 
-The first thing we need to do is download R, a free statistical programming language. R will be used heavily to perform phylogenetic analyses and visualize data. You can download R [here](https://www.r-project.org/).As of writing this, R is on version 4.1.1 (Kick Things), we will go over how to download that version. If you already have R installed you may want to consider updating R, directions on this below.
+The first thing we need to do is download R, a free statistical programming language. R will be used heavily to perform phylogenetic analyses and visualize data. You can download R [here](https://www.r-project.org/). As of writing this, R is on version 4.1.1 (Kick Things), we will go over how to download that version. If you already have R installed you may want to consider updating R, directions on this below.
 
 ----
 
@@ -34,7 +34,7 @@ After clicking the link, I was brought to a subdirectory, on this page you shoul
 
 #### Mac
 
-words
+When you install for macOS, you simply need to choose the latest release and download the correct installation package for your version of macOS. After downloading the file, open the `.pkg` file and follow the instructions for installing R on your computer. 
 
 
 ### {-}
@@ -70,3 +70,7 @@ Rstudio provides a powerful working environment for R. It can seem a bit overwhe
 
 
 ## Downloading and updating R packages
+
+Througout this course you will need to download and install packages needed to complete the tutorials. You can easily browse the available packages using the Rstudio installer. This can be found in the "Packages" panel. 
+
+Additionally, you can install pacakges in the R terminal. For example, you can install the phylogenetics pacakage `ape` using the command `install.packages("ape")`. Each tutorial will indicate the required packages. 
