@@ -39,12 +39,6 @@ When you install for macOS, you simply need to choose the latest release and dow
 
 ### {-}
 
-----
-
-### Updating R
-
-
-
 -----
 
 Congrats! An up to date version of R should be installed! You should now have an R executable. If you run R you should be greeted with the message:
@@ -66,11 +60,26 @@ The free desktop version should be sufficient for our purposes. After clicking t
 
 ## Using Rstudio
 
-Rstudio provides a powerful working environment for R. It can seem a bit overwhelming at first but once you get the hang of it, there's a lot you can do with Rstudio. First, lets go over the different panes that appear.
+Rstudio provides a powerful working environment for R. It can seem a bit overwhelming at first but once you get the hang of it, there's a lot you can do with Rstudio. There are four main panes that are useful to know in Rstudio. Here's what Rstudio may look like when you first open it up
 
+![](figs/rstudio_image.png)
+
+In the top left there should be a pane with scripts, or code, for R. If this pane is not present you can either start a new R script or load one in by using the **file** tab on the top left of the window. If starting a new script then you would want to select **New File** and **R Script** afterwards. This pane is where we can write code to be executed and save it to a file to view later.
+
+The bottom left pane has the console, this is where you can execute R code by typing commands after the **>** symbol. If you want to execute code from your R scripts above you can select the line you want to run and either press the **Run** button with a green arrow to the left of it or you can press Ctrl+Enter (Cmd+Enter on Macs).
+
+The top right pane shows our environment, this has information about any variables that we may have created while running R code. You will be able to see the names of the created variables as well as some basic information such as their value, type, or size.
+
+The bottom right pane has a few different uses depending on what you are doing. Any plots you create will appear in this corner or if you use the **?** operator before a function name, a help file will come up with details about a given function. For example, if you type `?mean()` in the console and press Enter to execute the code then a file will appear in the bottom right that gives information and usage for the `mean()` function.
+
+We will cover some more basic details about Rstudio next week but you should also play around a bit Rstudio by pressing some of the various buttons to see what things do and how to navigate the software. Additionally you can check out the first few pages [here](https://www.jcu.edu.au/__data/assets/pdf_file/0004/1188310/R-Studio-Basics.pdf) for a bit more guidance on using Rstudio.
 
 ## Downloading and updating R packages
 
-Througout this course you will need to download and install packages needed to complete the tutorials. You can easily browse the available packages using the Rstudio installer. This can be found in the "Packages" panel. 
+Throughout this course you will need to download and install packages needed to complete the tutorials. You can easily browse the available packages using the Rstudio installer. This can be found in the "Packages" panel. 
 
-Additionally, you can install pacakges in the R terminal. For example, you can install the phylogenetics pacakage `ape` using the command `install.packages("ape")`. Each tutorial will indicate the required packages. 
+Additionally, you can install packages in the R terminal. For example, you can install the phylogenetics package `ape` using the command `install.packages("ape")`. Each tutorial will indicate the required packages. 
+
+## Using R
+
+Next week we will cover some R usage basics. However, it may be helpful to play around with R and get acquainted with the syntax, especially if this is your first time coding. Adam Bard has some good tutorials for various programming languages and it may be helpful to look at his tutorial on [Learning X in Y Minutes, where X=R](https://learnxinyminutes.com/docs/r/). Try running some of the code in the tutorial to get familiar with executing code and looking for outputs, or even just perusing the tutorial to see the specific syntax of R can be useful.

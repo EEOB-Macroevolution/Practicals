@@ -30,5 +30,5 @@ my_data<-as.data.frame(cbind(species,disc_trait_sim,cont_trait_sim))
 
 colnames(my_data)<-c('species','type','bite_radius')
 
-write.csv(x=my_data,file='../data/fizzgig_data.csv')
+write.csv(x=my_data,file='../data/fizzgig_data.csv',row.names = F)
 write.tree(tree,file='../data/fizzgig.tre')
