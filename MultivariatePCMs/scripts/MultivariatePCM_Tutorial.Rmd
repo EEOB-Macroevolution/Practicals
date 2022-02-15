@@ -45,7 +45,7 @@ The key for much of the principal components analysis that we'll do relies on `g
 <div class = "func">
 
 <details>
-  <summary> <font size="+2"> `corHMM()` </font> </summary>
+  <summary> <font size="+2"> `gm.prcomp` </font> </summary>
  
 Function performs principal components analysis (PCA) or phylogenetically-aligned components (PaCA) on Procrustes shape coordinates.This function has a few different arguments but we'll primarily be concerned with the following:
 
@@ -53,7 +53,7 @@ Function performs principal components analysis (PCA) or phylogenetically-aligne
 * $phy$ a phylo object
 * $GLS$ The value is defaulted to `FALSE` and is a logical for whether GLS-centering and covariance estimating should be used. This is where we use the information from the phylogeny in the analytical computation of our principal components
 
-This function The principal components analysis. Most of the elements that are returned are to be used in other functions for analysis.
+This function performs the principal components analysis. Most of the elements that are returned are to be used in other functions for analysis.
 
 
 </details>
@@ -131,7 +131,7 @@ One can also envision comparing rates of phenotypic evolution in multivariate tr
 
 Plethodontid salamanders have a lot of diversity in their head shapes. Since quantifying head shape is better done in a multivariate setting, we have took landmark measurements of the head. We're interested in asking whether there is a relationship between the shape of salamander head and head size.
 
-`geomorph` actually has a built in dataset that we can use for this analysis. We can load an format the data set with the following commands:
+`geomorph` actually has a built in dataset that we can use for this analysis. We can load and format the data set with the following commands:
 
 ```{r,pleth_read,eval=FALSE}
 ```
@@ -142,7 +142,7 @@ We now have our salamander tree in the saved as `pleth_tree` and our head landma
 1. Visualize the alligned landmark data with principal components, using both phylomorphospace and phylo PCA. How do these plots compare to one another? 
 2. use `geomorph.data.frame()` to format our aligned data set. 
 3. Perform multivariate phylogenetic regression to explore the relationship between head shape and size. Is there a relationship between the two traits?
-4. Assess the phylogenetic signal of head shape, dies head shape associate with the phylogeny?
+4. Assess the phylogenetic signal of head shape, does head shape associate with the phylogeny?
 
 </div>
 <br></br>
