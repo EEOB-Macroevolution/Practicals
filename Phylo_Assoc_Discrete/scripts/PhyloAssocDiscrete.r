@@ -217,8 +217,7 @@ trait34_fit_er$loglik
 trait34_fit_dir$loglik
 
 summart_stat <- -2*(trait34_fit_er$loglik-trait34_fit_dir$loglik)
-1-pchisq(summary_stat,df=2) ##2 degrees of freedom b/c 3-1=2, the difference in the number of parameters 
-##high p value means we fail to reject the null model that allows for different transitions of one trait based on being in the other.
+pchisq(summary_stat,df=2) ##2 degrees of freedom b/c transitions of one trait based on being in the other.
 
 trait34_fit_er$AIC
 trait34_fit_dir$AIC ##Strong preference for trait34_fit_dir 
