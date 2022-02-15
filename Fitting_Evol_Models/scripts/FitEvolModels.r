@@ -62,7 +62,7 @@ for(i in 2:100){lines(OU1.sim2[[i]])}
 par(mfcol = c(1,1))
 
 ## ----OU_fit----
-
+options(warn=-1)
 fit.OU1<-fitContinuous(tree, svl,model="OU")    #OU1 model
 fit.OU1
 

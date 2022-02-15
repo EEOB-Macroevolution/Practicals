@@ -24,6 +24,8 @@ Today we explore methods for comparing continuous models of trait evolution. Man
 
 All of these questions can be addressed by fitting different evolutionary models to the data, and determining which displays the highest support. The approach falls squarely in statistical *Model Comparison* methods, where the fit of different models is obtained, and evaluated using various approaches: likelihood ratio tests (LRT) and AIC comparisons being the most common.
 
+**IMPORTANT STATISTICAL NOTE:** Statistical model comparison is of the form: $Y=X\beta + E$, where the data are fit to different $X$ variables (i.e., differing explanatory hypotheses). With evolutionary model comparison, all models are the algebraic form: $Y=1\beta + E$, but where $E$ is modeled using different expected covariance structures (BM, OU1, etc.). Thus the latter fits different error structures to an intercept model, rather than comparing the fit of the data to differing explanatory variables (see Adams and Collyer 2018; 2019).
+
 
 ### Learning Objectives
 
