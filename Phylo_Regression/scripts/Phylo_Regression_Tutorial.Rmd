@@ -86,12 +86,12 @@ This function returns the phlyogenetically independent contrasts of the traits
 ```{r, sim_correction, eval=T}
 ```
 
-Here we have estimated a correlation of approximately $0.08$, that's notably better to the true correlation of $0$ when compared to the correlation of the traits without taking the phylogeny into consideration. 
+Here we have estimated a correlation of approximately $0.08$, that's notably closer to the true correlation of $0$ when compared to the correlation of the traits without taking the phylogeny into consideration. 
 
 <div class = "try">
 ### Try it out! The better estimator
 
-We just went over two ways of computing the correlation between two traits: one that doesn't take the phylogeny into account and one that does. The later should generally be a better estimator of the true correlation as we are accounting for shared ancestry, however, thru simulation we can show *why* it is a better estimator. We can simulate trait data many times and compute the correlation using both methods to get a feel for how these estimators tend to act. Try the following:
+We just went over two ways of computing the correlation between two traits: one that doesn't take the phylogeny into account and one that does. The later should generally be a better estimator of the true correlation as we are accounting for shared ancestry, however, via simulation we can show *why* it is a better estimator. We can simulate trait data many times and compute the correlation using both methods to get a feel for how these estimators tend to act. Try the following:
 
 
 1. Simulate $X$ and $Y$ trait data on `mytree` 10,000 times
@@ -122,13 +122,13 @@ This function both trims a tree and pruning species from a matrix of trait data 
 `treedata` has two primary arguments and two quality of life arguments:
 
 * $phy$ a phylo object
-* $phy$ a named vector or matrix with rownames that represent the species in `phy`
+* $data$ a named vector or matrix of continuous trait values, for species in `phy`
 * $sort$ a logical for whether `data` should be sorted to match the ordering of names found in `phy` (i.e sort `data` such that the $i^{th}$ row of `data` corresponds to the $i^{th}$ species found in `phy$tip.labels`)
 * $warnings$ a logical for whether to report warnings of mismatched taxa between `data` and `phy`
 
 This function returns a list containing the trimmed phylogeny and data. If the list is saved as a variable named `output`, then one can access the phylogeny with the command `output$phy` and the data with the `output$data1`.
 
-**NOTE:** This function doesn't like when the structure containing trait data contains both numbers (continuous variables) and strings (typically categorical variables ).  If there are strings then the output `output$data` will be a matrix with all values converted into strings, which creates issues for functions down the road. We will give an example for how to convert binary categorical variable saved as a string below.
+**NOTE:** If the function is provided data containing both (continuous variables) and strings (typically categorical variables), then the output `output$data` will be a matrix with all values converted into strings, which creates issues for functions down the road. We will give an example for how to convert binary categorical variable saved as a string below.
 
 </details>
 </div>
@@ -141,13 +141,13 @@ This function returns a list containing the trimmed phylogeny and data. If the l
 <div class = "try">
 ### Try it out! Hydromantes Data Matching
 
-We were able to match our Plethodontid trait data to our Salamander phylogeny, trimming both so that they contain the same species. We can now find the trimmed phylogeny in `Pleth_matched$phy` and trimmed data in `Pleth_mathched$data`. we also have a dataset of Hydromantes salamanders. Try matching the salamander tree to the Hydromantes dataset:
+We were able to match our Plethodontid trait data to our salamander phylogeny, trimming both so that they contain the same species. We can now find the trimmed phylogeny in `Pleth_matched$phy` and trimmed data in `Pleth_mathched$data`. we also have a dataset of Hydromantes salamanders. Try matching the salamander tree to the Hydromantes dataset:
 
 1. read in the Hydromantes dataset. The file is named `HydromantesMns.csv` and can be found in the `data` folder.
-2. read in the Salamander tree. The file is named `Mander.tre` and can be found in the `data` folder.
+2. read in the salamander tree. The file is named `Mander.tre` and can be found in the `data` folder.
 3. use `treedata` to sync up the two elements. 
 
-How many species were in the Hydromantes dataset before trimming? How many tips were on the Salamander tree before trimming? How many species are in the matched dataset? Which species was/were removed from the Hydromantes dataset? Try plotting the trimmed Hydromantes phylogeny and using the `tiplabels()` function to plot head length on the phylogeny (`?tiplabels` may be helpful for learning how to use this function). 
+How many species were in the Hydromantes dataset before trimming? How many tips were on the salamander tree before trimming? How many species are in the matched dataset? Which species was/were removed from the Hydromantes dataset? Try plotting the trimmed Hydromantes phylogeny and using the `tiplabels()` function to plot head length on the phylogeny (`?tiplabels` may be helpful for learning how to use this function). 
 
 </div>
 <br></br>
@@ -155,15 +155,15 @@ How many species were in the Hydromantes dataset before trimming? How many tips 
 
 ### **Methods for Implementing Phylogenetic Regression** 
 
-Now it is time to put it all together and perform a phylogenetic comparative analysis. Using what we have learned, we will use the chronogram and a matrix of quantitative data Plethodontid Salamanders. In this case, the data are a set of continuous linear measurements representing morphology. We will perform a bivariate regression of various traits to evaluate the evolutionary association between them, in particular we will be looking at body width (`BodyW`), hind leg size (`Hind`),fore leg size (`Fore`), head length (`HL`), and body size (`SVL`). However, before we look at the different methods for phylogenetic regression, it may be useful to familiarize ourselves with some of the jargon and functions that are used across methods.
+Now it is time to put it all together and perform a phylogenetic comparative analysis. Using what we have learned, we will use the chronogram and a matrix of quantitative data Plethodontid salamanders. In this case, the data are a set of continuous linear measurements representing morphology. We will perform a bivariate regression of various traits to evaluate the evolutionary association between them, in particular we will be looking at body width (`BodyW`), hindlimb length (`Hind`),forelimb length (`Fore`), head length (`HL`), and body size (`SVL`). However, before we look at the different methods for phylogenetic regression, it may be useful to familiarize ourselves with some of the jargon and functions that are used across methods.
 
 ### Models, Regression, and Statistical Tests in R
 
-As we look at the various ways we can implement a phylogenetic regression there will be a lot of new functions and some strange syntax. A lot of the syntax is related to linear models are created in R. There are a lot of fancy things that can be done will modeling in R, however, we will be providing a brief and barebones introduction to some of these concepts. You can check out [this](https://doi.org/10.24926/8668/1301) free digital book for a more robust introduction to modeling and regression in R.
+As we look at the various ways we can implement a phylogenetic regression there will be a lot of new functions and some strange syntax. A lot of the syntax is related to linear models created in R. There are many manipulations that can be done will modeling in R, however, we will be providing a brief and barebones introduction to some of these concepts. You can check out [this](https://doi.org/10.24926/8668/1301) free digital book for a more robust introduction to modeling and regression in R.
 
-Firstly, we will encounter the `~` operator when creating and fitting models in R. The tilde is used to denote the relation between variables. For example, we could interpret `Y~X` as a model where `Y` depends on `X`. However, the tilde is only an expression that denotes the relationship between variables, we will see a few different functions (e.g. `lm()`, `gls`, `lm.rrpp()`) that use these expressions to make models that describe how traits may be related. These functions all have their idiosyncrasies for the parameters they require and the types of models they can accommodate but generally speaking, they are all used to create and fit models that describe some relation between variables.
+First, we will encounter the `~` operator when creating and fitting models in R. The tilde is used to denote the relation between variables. For example, we interpret the expression `Y~X` as a model where variation in `Y` (the dependent variable) depends on variation in `X` (the independent variable). This expression is then used by various functions (e.g. `lm()`, `gls`, `lm.rrpp()`) to fit the linear model, and estimate parameters from it. 
 
-Once we have created and fit a model we may wish to see some estimates and key statistics of the model. The two primary functions we will be using are `summary()` and `anova()`. If you're not familiar with these functions be sure to check out the boxes for each function.
+Once we have and fit the linear model and obtained estiamtes of its parameters, we may wish to see those estimates and obtain key statistical summary values of the model. The two primary functions used for this are `summary()` and `anova()`. If you're not familiar with these functions be sure to check out the boxes for each function.
 
 <div class = "func">
 
@@ -191,7 +191,7 @@ We can also observe other summary statistics on the bottom, such as the R-square
 <details>
   <summary> <font size="+2"> `anova()` </font> </summary>
  
-This function performs an **an**alysis **o**f **v**ariance for model objects. This suite of tests is often used to assess whether two groups have different means. However, in the case of linear modeling it can be used to test whether the effects (slope parameter) of covariates are nonzero.
+This function performs an **an**alysis **o**f **va**riance for model objects. This suite of tests is often used to assess whether two groups have different means. However, in the case of linear modeling it can be used to test whether the effects (slope parameter) of covariates are nonzero.
 
 ```{r,eval=FALSE}
 ##Make a linear model with preset data in R
@@ -211,18 +211,18 @@ You can click each of the buttons to see how to perform phylogenetic regression 
 
 #### 0: Phylogenetically-Naive Analysis
 
-First we'll explore the relationship between body width (`BodyW`) and hind leg size (`Hind`).
+First we'll explore the relationship between hindlimb length (`Hind`) and body width (`BodyW`).
 
 Let's see what happens when we erroneously don't account for phylogeny. 
 
 ```{r, phylo_naive,eval=T}
 ```
 
-When plotting the traits out it would appear that the two are highly correlated. In fact, a correlation test shows a correlation of $0.93$ with a monstrously small *p-value* of $2.2\times10^{-16}$. Indeed, and ANOVA also leads us to believe that there is a non-trivial effect of hind leg size on body width. 
+When plotting the traits out it would appear that the two are highly correlated. In fact, a correlation test shows a correlation of $0.93$ with a very small *p-value* of $2.2\times10^{-16}$. Indeed, and ANOVA also leads us to believe that there is a non-trivial effect of hindlimb length on body width. 
 
 #### 1: Phylogenetically Independent Contrasts
 
-Now we'll look again at the relationship between body width (`BodyW`) and hind leg size (`Hind`) but first condition on the phylogeny. 
+Now we'll look again at the relationship between hindlimb length (`Hind`) and body width (`BodyW`), but first by conditioning on the phylogeny. 
 
 Now, let's recall what PIC does. The approach (Felsenstein 1985) does not perform correlation or regression on the data at the tips of the phylogeny, but rather generates a set of contrast scores at each node of the phylogeny. Under Brownian motion, these are independent of one another and of the phylogeny. One uses the pruning algorithm to work down the phylogeny from tips to root, and obtains a set of N-1 contrasts for N taxa. These are then used in the comparative analysis. The approach is shown conceptually in Fig. 3. 
 
@@ -233,11 +233,11 @@ Now let's try this for our dataset:
 ```{r,PIC,eval=TRUE}
 ```
 
-We have just performed our first phylogenetic comparative analysis of trait correlation! Our findings are as follows: when conditioned on the phylogeny, there was a significant relationship between body width and hind leg size. This reveals a strong pattern of evolutionary covariation between the two traits at a macroevolutionary scale.  
+We have just performed our first phylogenetic comparative analysis of trait correlation! Our findings are as follows: when conditioned on the phylogeny, there was a significant relationship between hindlimb length and body width. This reveals a strong pattern of evolutionary covariation between the two traits at a macroevolutionary scale.  
 
 #### 2: Phylogenetic Generalized Least Squares
 
-Now let's investigate the another pattern using a different mathematical implementation, this time we'll look at hind leg size (`Hind`) and head length (`HL`). Recall from lecture that PICs are a wonderful algorithm for conditioning the data on the phylogeny which results in a set of contrasts that are independent of phylogenetic relationships. However, one could also consider the problem from a purely statistical perspective. Consider standard regression. Ordinary least squares (OLS) methods assume that the residual error is iid: $N(0,1)$. However, a phylogeny explicitly describes non-independence between species. This may be encoded in a *phylogenetic covariances matrix* $V$, which may be used to model the error covariance in a *Generalized Least Squares* (GLS) regression. This approach is more flexible and using PICs, as one may perform any model of the form Y~X while conditioning on the phylogeny (e.g., regression, ANOVA, multiple regression, etc.). As we will see later in the semester, the approach is also more flexible in that non-Brownian motion models may be incorporated by using a different expected covariance matrix $V$. With PGLS, the statistical procedure is the same as our familiar OLS regression with the exception that non-independence is accounted for using weighted LS approaches (Fig. 4). 
+Now let's investigate the another pattern using a different mathematical implementation, this time we'll look at head length (`HL`) and hindlimb length (`Hind`). Recall from lecture that PICs are a wonderful algorithm for conditioning the data on the phylogeny which results in a set of contrasts that are independent of phylogenetic relationships. However, one could also consider the problem from a purely statistical perspective. Consider standard regression. Ordinary least squares (OLS) methods assume that the residual error is iid: $N(0,1)$. However, a phylogeny explicitly describes non-independence between species. This may be encoded in a *phylogenetic covariances matrix* $V$, which may be used to model the error covariance in a *Generalized Least Squares* (GLS) regression. This approach is more flexible and using PICs, as one may perform any model of the form Y~X while conditioning on the phylogeny (e.g., regression, ANOVA, multiple regression, etc.). As we will see later in the semester, the approach is also more flexible in that non-Brownian motion models may be incorporated by using a different expected covariance matrix $V$. With PGLS, the statistical procedure is the same as our familiar OLS regression with the exception that non-independence is accounted for using weighted LS approaches (Fig. 4). 
 
 ![Fig 4. Mathematical description of PGLS.](../figs/PGLS.png)
 
@@ -262,11 +262,11 @@ While these functions have a few different arguments, they both really only requ
 ```{r,PGLS, eval=TRUE}
 ```
 
-We can see a significant relationship between hind leg size and head length. We should be able to draw the exact same conclusion from using PIC as well, so long as one performs it correctly! (see also Garland and Ives, 2000; Rohlf, 2001; Blomberg 2012 and others)
+We can see a significant relationship between head length and hindlimb. We should be able to draw the exact same conclusion from using PIC as well, so long as one performs the analysis correctly (see also Garland and Ives, 2000; Rohlf, 2001; Blomberg 2012 and others)!
 
 #### 3: Phylogenetic Transform
 
-A third implementation of phylogenetic regression is to use phylogenetic transformation. We will use phylogenetic transformation to explore the relationship between hind leg size (`Hind`) and fore leg size (`Fore`). Here we take the phylogenetic covariance matrix $V$ and from it obtain a matrix that re-expresses the expected non-independence through a series of axes representing a transformed dataspace. The $X$ and $Y$ data are then multiplied by this transformation matrix (ie., they are projected into the new dataspace). This results in data that have been conditioned on the phylogeny. As such the resulting data are independent of one another, and standard OLS methods may be used (see Garland and Ives, 2000; Adams 2014; Adams and Collyer 2018).  The approach is illustrated graphically in Fig. 5. 
+A third implementation of phylogenetic regression is to use phylogenetic transformation. We will use phylogenetic transformation to explore the relationship between hindlimb length (`Hind`) and forelimb length (`Fore`). Here we take the phylogenetic covariance matrix $V$ and from it obtain a matrix that re-expresses the expected non-independence through a series of axes representing a transformed dataspace. The $X$ and $Y$ data are then multiplied by this transformation matrix (ie., they are projected into the new dataspace). This results in data that have been conditioned on the phylogeny. As such the resulting data are independent of one another, and standard OLS methods may be used (see Garland and Ives, 2000; Adams 2014; Adams and Collyer 2018).  The approach is illustrated graphically in Fig. 5. 
 
 ![Fig 5. Mathematical description of phylogenetic transformation.](../figs/PhyloTrans.png)
 
@@ -274,7 +274,7 @@ A third implementation of phylogenetic regression is to use phylogenetic transfo
 
 ```
 
-Here we can see a significant relationship between hind leg size and fore leg size. We should come to the same result, and have the same estimates regardless of whether we use this approach, PIC, or PGLS. The advantage of this last approach however, will become clear in a few weeks.  This implementation may be used for examining patterns in highly-multivariate phenotypes $(Y)$, whereas parametric versions of PIC and PGLS cannot be used. 
+Here we can see a significant relationship between hindlimb length and forelimb length. We should come to the same result, and have the same parameter estimates and statistical summary measures, regardless of whether we use this approach, PIC, or PGLS. The advantage of this last approach however, will become clear in a few weeks.  This implementation may be used for examining patterns in highly-multivariate phenotypes $(Y)$, whereas parametric versions of PIC and PGLS are challenged under these conditions. 
 
 
 <div class = "try">
@@ -282,9 +282,9 @@ Here we can see a significant relationship between hind leg size and fore leg si
 
 While each method has their pros and cons (e.g. PGLS is good at accommodating various models for trait evolution while phylogenetic transformation is good for multivariate data), we should arrive at the same place regardless of the method we use. Here we will look at the relationship between body size (`SVL`) and head length (`HL`) using PIC, PGLS, and phylogenetic transformation to see whether they all give the same results. Specifically, you should:
 
-1. Perform phylogenetic regression of `SVL` on `HL` using PIC, PGLS, and phylogenetic transformation
+1. Perform phylogenetic regression of `HL` on `SVL` using PIC, PGLS, and phylogenetic transformation
 2. use `summary()` and `anova()` to record the F-statistic and the coefficient that describes the effect of `SVL` on `HL` for each method
-3. Perform a regression of `SVL` and `HL` without conditioning on phylogeny
+3. Perform a regression of `HL` and `SVL`without conditioning on phylogeny
 
 Are the summary statistics and coefficient estimates the same across each method? How do these summary statistics compare to the analysis that isn't conditioned on the phylogeny? Do our conclusions change if we condition on the phylogeny? What conclusions would you make about the relationship between body size and head length?
 
@@ -308,7 +308,7 @@ A second procedure using phylogenetic transformation and permutation (RRPP). Her
 Remember, phylogenetic ANOVA via simulation (Garland et al. 1993) does *not* condition the data on the phylogeny. It uses OLS ANOVA followed by BM simulations for possible results. This is why the F-ratio differs in the first method above as compared to the other two approaches (PGLS and phylogenetic transform). Recall also from lecture that the distribution of F-ratios and significance levels, do not match using the Garland et al. procedure. However, the latter two methods *do* condition the data on the phylogeny during the analysis, and match one another perfectly. 
 
 #### Phylogenetic Signal
-Another question one commonly asks is: "To what extent does my data display phylogenetic signal?"  Generally speaking, phylogenetic signal is the degree to which trait similarity reflects phylogenetic relatedness. That is, it describes the extent to which closely related species are similar in their trait values. Several methods have been proposed for this, the two most common of which are K (kappa: Blomberg et al. 2003; Adams, 2014), and lambda (Pagel 1994). Here we use the former method. We can even test whether there is a significant amount of phylogenetic signal thru permutation. We can accomplish this with either the `phylosig` function from the `phytools` package or the `physignal` function from the `geomorph` package.
+Another question one commonly asks is: "To what extent does my data display phylogenetic signal?"  Generally speaking, phylogenetic signal is the degree to which trait similarity reflects phylogenetic relatedness. That is, it describes the extent to which closely related species are similar in their trait values. Several methods have been proposed for this, the two most common of which are K (kappa: Blomberg et al. 2003; Adams, 2014), and lambda (Pagel 1994). Here we use the former method. We can even test whether there is a significant amount of phylogenetic signal via permutation. We can accomplish this with either the `phylosig` function from the `phytools` package or the `physignal` function from the `geomorph` package.
 
 ```{r,phylo_signal, eval=TRUE}
 ```
@@ -327,7 +327,7 @@ We've fit various models to both our Hydromantes and Plethodontid datasets but i
     + compute the phylogenetic signal K
     + Perform a hypothesis test using permutation to assess whether there is a significant amount of phylogenetic signal
 
-Is there phylogenetic signal? which trait has more signal?
+Is there phylogenetic signal? which trait has more signal?  **NOTE: A formal test comparing the strength of phylogenetic signal requires an effect size (Z-score): see Collyer et al. 2022: MEE)**
 
 </div>
 <br></br>

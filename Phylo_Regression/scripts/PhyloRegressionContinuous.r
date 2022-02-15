@@ -85,7 +85,7 @@ C <- vcv.phylo(phy = Pleth_matched$phy)
 #Now we run the analysis:
 library(nlme)
 
-bm_gls<-gls(HL~Hind,correlation = V, data=data.frame(SVL, HL))
+bm_gls<-gls(HL~Hind,correlation = V, data=data.frame(Hind, HL))
 summary(bm_gls)    
 anova(bm_gls)
 
@@ -139,7 +139,7 @@ plot(dat.BM, asp=1)
 #To apply what you have learned, please do the following:
 
 #1: Simulate a phylogeny (or read one into R)
-#2: Simultate two continuous traits with some known correlation between them
+#2: Simulate two continuous traits with some known correlation between them
 #3: Estimate the evolutionary association of the traits, conditioned on the phylogeny, using one of the methods you have learned
 
 #Upload your code to the assignment center on Canvas 
