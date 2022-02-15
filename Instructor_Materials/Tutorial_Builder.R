@@ -4,6 +4,12 @@ library(knitr)
 
 ##Set working directory to this file's location!
 
+print('building Onboarding Tutorial')
+render(input = "../Onboarding_Rintro/Setting_up_R_Rstudio.Rmd",quiet=T)
+
+print('building Intro R Tutorial')
+render(input = "../Onboarding_Rintro/Intro_to_R.Rmd",quiet=T)
+
 print('building Ancestral State Estimation Tutorial')
 render(input = "../Ancestral_State_Estimation/scripts/AncStateEstimation_Tutorial.Rmd",
        output_dir = "/Ancestral_State_Estimation",quiet = T)

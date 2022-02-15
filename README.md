@@ -5,8 +5,9 @@ This repository contains the tutorials for Macroevolution (BIOL 465 / EEOB 565),
 ## Topics Covered
 
 In this repo you will find all of the materials related to practicals for EEOB565X. The materials are divided by macroevolutionary topic. These topics include:
-* [**Onboarding**](https://eeob-macroevolution.github.io/Practicals/Onboarding/Setting_up_R_Rstudio.html) to R, Rsutdio, and the tutorials themselves
-* [**An Introduction to R and Phylogenetics in R**](https://eeob-macroevolution.github.io/Practicals/Intro_to_Phylo/intro_to_phylo.html)
+* [**Onboarding**](https://eeob-macroevolution.github.io/Practicals/Onboarding_RIntro/Setting_up_R_Rstudio.html) to R, Rsutdio, and the tutorials themselves
+* [**An Introduction to R**](https://eeob-macroevolution.github.io/Practicals/Onboarding_RIntro/intro_to_R.html)
+* [**An Introduction to Phylogenetics in R**](https://eeob-macroevolution.github.io/Practicals/Intro_to_Phylo/intro_to_phylo.html)
 * [**Phylogenetic Association of Discrete Characters**](https://eeob-macroevolution.github.io/Practicals/Phylo_Assoc_Discrete/Phylo_Assoc_Discrete_Tutorial.html)
 * [**Phylogenetic Regression**](https://eeob-macroevolution.github.io/Practicals/Phylo_Regression/Phylo_Regression_Tutorial.html)
 * [**Ancestral State Estimation**](https://eeob-macroevolution.github.io/Practicals/Ancestral_State_Estimation/AncStateEstimation_Tutorial.html)

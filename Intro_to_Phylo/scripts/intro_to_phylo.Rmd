@@ -329,14 +329,6 @@ fitJC <- optim.pml(fitJC, optNni=TRUE)
 plot(fitJC$tree)
 ```
 
-The tree is a bit confusing to understand since it is unrooted. Since there are outgroup taxa, we can reroot the tree and present it so that the primates are the ingroup.
-
-```{r}
-outgroup <- c('Mouse','Bovine')
-JC_tree_rooted <- root(fitJC$tree,outgroup)
-plot(JC_tree_rooted)
-```
-
 If we want to optimize the tree using a different model like GTR, we can use the `pml` object as an argument and specify the `GTR` model.
 
 ```{r}
