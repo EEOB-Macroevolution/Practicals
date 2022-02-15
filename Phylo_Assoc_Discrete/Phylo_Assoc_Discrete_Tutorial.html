@@ -365,13 +365,13 @@ trait1_fit_er &lt;-corHMM(phy = tree, data = trt1, rate.cat = 1, rate.mat = trai
 ## Finished. Inferring ancestral states using marginal reconstruction.</code></pre>
 <pre class="r"><code>##The estimated rates
 trait1_fit_er$solution</code></pre>
-<pre><code>##            (1,R1)     (2,R1)
-## (1,R1)         NA 0.00806685
-## (2,R1) 0.00806685         NA</code></pre>
+<pre><code>##             (1,R1)      (2,R1)
+## (1,R1)          NA 0.008067822
+## (2,R1) 0.008067822          NA</code></pre>
 <pre class="r"><code>trait1_fit_ard$solution</code></pre>
-<pre><code>##            (1,R1)      (2,R1)
-## (1,R1)         NA 0.008067046
-## (2,R1) 0.00806795          NA</code></pre>
+<pre><code>##             (1,R1)      (2,R1)
+## (1,R1)          NA 0.008067107
+## (2,R1) 0.008067935          NA</code></pre>
 <pre class="r"><code>#compare models: logL and AIC
 trait1_fit_er$loglik</code></pre>
 <pre><code>## [1] -5.824139</code></pre>
@@ -380,8 +380,8 @@ trait1_fit_er$loglik</code></pre>
 <pre class="r"><code>##We can formally perform a likelihood ratio test of nested models by doing the following
 summary_stat &lt;- -2 * (trait1_fit_er$loglik - trait1_fit_ard$loglik) ## -2 * (model_constrained - model_full)
 ##This is our p-value
-1-pchisq(summary_stat,df = 1 ) ##degrees of freedom is the difference in the number of parameters between the two models. In our case 2-1=1</code></pre>
-<pre><code>## [1] 0.9999576</code></pre>
+pchisq(summary_stat,df = 1,lower.tail=FALSE ) ##degrees of freedom is the difference in the number of parameters between the two models. In our case 2-1=1</code></pre>
+<pre><code>## [1] 1</code></pre>
 <pre class="r"><code>trait1_fit_er$AIC</code></pre>
 <pre><code>## [1] 13.64828</code></pre>
 <pre class="r"><code>trait1_fit_ard$AIC</code></pre>
@@ -601,9 +601,6 @@ trait34_fit_er  &lt;-corHMM(phy = tree, data = traits34, rate.cat = 1, rate.mat 
 <pre><code>## [1] -85.97839</code></pre>
 <pre class="r"><code>trait34_fit_dir$loglik</code></pre>
 <pre><code>## [1] -75.81068</code></pre>
-<pre class="r"><code>summart_stat &lt;- -2*(trait34_fit_er$loglik-trait34_fit_dir$loglik)
-pchisq(summary_stat,df=2) ##2 degrees of freedom b/c transitions of one trait based on being in the other.</code></pre>
-<pre><code>## [1] 1.410478e-09</code></pre>
 <pre class="r"><code>trait34_fit_er$AIC</code></pre>
 <pre><code>## [1] 173.9568</code></pre>
 <pre class="r"><code>trait34_fit_dir$AIC ##Strong preference for trait34_fit_dir </code></pre>

@@ -70,7 +70,7 @@ trait1_fit_ard$loglik
 ##We can formally perform a likelihood ratio test of nested models by doing the following
 summary_stat <- -2 * (trait1_fit_er$loglik - trait1_fit_ard$loglik) ## -2 * (model_constrained - model_full)
 ##This is our p-value
-1-pchisq(summary_stat,df = 1 ) ##degrees of freedom is the difference in the number of parameters between the two models. In our case 2-1=1
+pchisq(summary_stat,df = 1,lower.tail=FALSE ) ##degrees of freedom is the difference in the number of parameters between the two models. In our case 2-1=1
 
 trait1_fit_er$AIC
 trait1_fit_ard$AIC
@@ -216,8 +216,7 @@ trait34_fit_dir <-corHMM(phy = tree, data = traits34, rate.cat = 1, rate.mat = t
 trait34_fit_er$loglik
 trait34_fit_dir$loglik
 
-summart_stat <- -2*(trait34_fit_er$loglik-trait34_fit_dir$loglik)
-pchisq(summary_stat,df=2) ##2 degrees of freedom b/c transitions of one trait based on being in the other.
+
 
 trait34_fit_er$AIC
 trait34_fit_dir$AIC ##Strong preference for trait34_fit_dir 
