@@ -19,7 +19,7 @@ knitr::read_chunk('PhyloAssocDiscrete.R')
 
 
 ### **Overview**
-Today we continue our investigation of correlated trait evolution, and implement methods for examining trait associations in discrete traits. Conceptually, the challenge is little different from what was examined for continuous variables. Specifically, we wish to identify an association between two variables while accounting for (e.g., conditioning) the data on the phylogeny.  For bivariate regression, we used one of three implementations of phylogenetic generalized least squares: phylogenetically independent contrasts (PIC), phylogenetic generalized least squares (PGLS), and phylogenetic transformation. For trait associations between discrete changes, we use likelihood or Bayesian approaches. 
+This tutorial is intended to describe how we investigate correlated trait evolution, through methods that examine trait associations between discrete traits. Conceptually, the challenge is to identify associated shifts in two discrete traits while accounting for phylogenetic non-independence (i.e., conditioning the data on the phylogeny). For trait associations between discrete changes, we use likelihood or Bayesian approaches. For continuous traits (described next time), we use  one of several implementations of phylogenetic generalized least squares.  
 
 ### Learning Objectives
 
@@ -46,11 +46,11 @@ As before, on your local computer, place them in a folder named 'TutorialData', 
 #### **Conceptual Background**
 Recall that in macroevolutionary studies, we are often interested in determining how two or more traits covary across a broad set of taxa. For continuous variables, this is a 'regression' problem: we statistically quantify the degree of covaraition between Y and X while accounting for the phylogenetic relationships among species. If a significant relationship is observed, we can conclude that there is an evolutionary association between Y and X, which may be due to some biological factor of interest (e.g., natural selection, adaptation, etc.).
 
-As evolutionary biologists we may wish to ask very similar questions when our phenotypic data are not continuous, but are instead discrete. For example, we may have species with two color 'states': aposematic or cryptic. And these same species may be classified behaviorally as either solitary or gregarious.  An interesting evolutionary question would be: Is there an association between behavior and coloration?  Put another way, are cryptic species more often solitary, while aposematic are gregarious? From the data in Fig 1., we may wish to test this hypothesis statistically.
+As evolutionary biologists we may wish to ask very similar questions when our phenotypic data are not continuous, but are instead discrete. For example, we may have species with two color 'states': aposematic or cryptic. And these same species may be classified behaviorally as either solitary or gregarious.  An interesting evolutionary question would be: Is there an association between behavior and coloration?  Put another way, are cryptic species more often solitary, and aposematic more gregarious? From the data in Fig 1., we may wish to test this hypothesis statistically.
 
 ![Fig 1. Table of discrete traits for behavior and coloration for several hypothetical species.](../figs/DiscreteTable.png)
 
-One might be tempted to simply perform a Chi-square test on these data. However, this ignores evolutionary history, and how these are distributed on the phylogeny can make an enormous difference! In case 1 (Fig. 2A) the traits are clustered in two sub-lineages, implying that a single evolutionary transition in each trait could have caused our pattern. This is not overly impressive evolutionarily, as it represents an $N=1$ case.  On the other hand, case 2 (Fig. 2B) shows many independent associations of the two traits. This is far more impressive. Clearly, taking phylogeny into consideration is absolutely essential for correct biological inference.  
+One might be tempted to simply perform a Chi-square test on these data. However, this ignores evolutionary history, and how these are distributed on the phylogeny can make an enormous difference! In case 1 (Fig. 2A) the traits are clustered in two sub-lineages, implying that a single evolutionary transition in each trait could have caused our pattern. This is not overly impressive evolutionarily, as it represents an $N=1$ case.  On the other hand, case 2 (Fig. 2B) shows many independent associated changes of the two traits. This is far more impressive. Clearly, taking phylogeny into consideration is absolutely essential for correct biological inference.  
 
 
 ![Fig 2. Two possible phylogenetic distributions of our discrete traits for the hypothetical example.](../figs/DiscreteTrees.png)
@@ -94,7 +94,7 @@ This is a general plotting function for the tips of a plotted phylogeny
 
 
 * $col$ This is a vector that specifies which color each point is. If only one color is provided then all points will be made that color. If nothing is given then the color will default to black
-* $offset$ this is a number that plots the points further away from the tip. This is helpful for when we want to plot multiple traits. Had we not have used offset on the second trait then it would have plotted on top of the first
+* $offset$ this is a number that plots the points further away from the tips. This is helpful for when we want to plot multiple traits. Had we not have used offset on the second trait then it would have plotted on top of the first
 * $pch$ This argument is a numeric that specifies the shape drawn for the trait. You can a table of shapes and their corresponding numbers [here](https://r-charts.com/base-r/pch-symbols/). One can also provide a vector of numbers to make each point a different shape. If wanted we can actually utilize this fact to make plot traits such that each state is a different shape by using the same tricks we did for colors. See below for an example
 * $cex$ this is a numeric that acts as a scalar for the size of the shape being drawn. If nothing is provided, this defaults to `1`
 
@@ -115,7 +115,7 @@ tiplabels(pch=shapes)
 
 ### **Phylogenetic Analysis of Discrete Characters**
 #### 1: Single trait analysis: transition rate comparison
-One component of phenotypic pattern that differs between discrete and continous traits concerns transition rates. With continuous data, we envisioned trait change following Brownian motion, where changes in trait values were independent from time step to time step, both in terms of their magnitude (how much change), and their direction (positive or negative change relative to the previous step).  For discrete traits, one can also model trait change that way, and in fact several models do so based on MCMC properties (which also underly Brownian motion). However, because there are a finite number of states, one can ask additional questions about pattern.
+One component of phenotypic pattern that differs between discrete and continous traits concerns transition rates. With continuous data, we envision trait change following Brownian motion, where changes in trait values are independent from time step to time step, both in terms of their magnitude (how much change), and their direction (positive or negative change relative to the previous step).  For discrete traits, one can also model trait change that way, and in fact several models do so based on MCMC properties (which also the discrete-form of a Brownian motion process). However, because there are a finite number of states, one can ask additional questions about pattern.
 
 For instance, is the rate of change from state $A \rightarrow B$ greater than the rate of change 'back' from $B \rightarrow A$? This question has little meaning for continuous traits, but could be very important for discrete traits. These values are embodied in the transition rate matrix **Q**, which is obtained from the estimated probability matrix (Fig. 3). Derivation of these matrices is described in Pagel (1994). 
 
@@ -134,7 +134,7 @@ This creates a rate matrix for the data to describe the discrete character evolu
 
 
 * $data$ a data.frame containing species information. The first column must be species names matching the phylogeny. Additional columns contain discrete character data. There will be an example of how to format trait information to this format below
-* $model$ One of "ARD", "SYM", or "ER". ARD: all rates differ. SYM: rates between any two states do not differ (i.e $A\rightarrow B$ equals $B\rightarrow A$). ER: all rates are equal.
+* $model$ One of "ARD", "SYM", or "ER". ARD: all rates differ. SYM: 'symmetric' rates between any two states do not differ (i.e $A\rightarrow B$ equals $B\rightarrow A$). ER: all rates are equal.
 
 This function returns a list of objects:
 
