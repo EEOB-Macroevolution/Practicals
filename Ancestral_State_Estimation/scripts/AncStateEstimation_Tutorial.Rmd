@@ -211,7 +211,7 @@ Importantly, continuous character evolution can also be mathematically derived f
 ```{r,anc_est_cont, eval=TRUE}
 ```
 
-As shown by Martins and Hansen (1997), ML, SCP, and GLS yield identical ancestral estimates. For estimates thru ML and GLS, we can use the `ace()` function that we used for ancestral state estimation of discrete characters. For ML estimation, we can use the function as we did before with the exception of changing `type="continuous"`. Getting estimates via GLS should give the same estimates but is a bit more complicated because we have to provide a correlation matrix in the `ace()` function.
+As shown by Martins and Hansen (1997), ML, SCP, and GLS yield identical ancestral estimates. For estimates via ML and GLS, we can use the `ace()` function that we used for ancestral state estimation of discrete characters. For ML estimation, we can use the function as we did before with the exception of changing `type="continuous"`. Getting estimates via GLS should give the same estimates but is a bit more complicated because we have to provide a correlation matrix in the `ace()` function.
 
 ```{r,anc_est_cont_ml,eval=TRUE}
 ```
