@@ -22,7 +22,7 @@ plot(PCA,phylo=TRUE)
 
 ## ----phylo_pca ----
 
-phylo_PCA<-gm.prcomp(Y,phy=plethtree)   #principal components of Y
+phylo_PCA<-gm.prcomp(Y,phy=plethtree,GLS=T)   #principal components of Y
 plot(phylo_PCA, pch=21,bg="black") ##we can put the PCA directly into the plot function
 
 ## ----phylo_reg----
