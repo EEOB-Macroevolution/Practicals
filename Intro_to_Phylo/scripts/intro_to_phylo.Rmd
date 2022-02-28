@@ -336,10 +336,11 @@ fitGTR <- optim.pml(fitJC, model="GTR", optNni=TRUE)
 plot(fitGTR$tree)
 ```
 
-Here the outgroup is not monophyletic, so trying to reroot the tree will give an error
+Re-root the tree using `"Bovine"` as the outgroup
 
 ```{r error=TRUE}
-GTR_tree_rooted <- root(fitGTR$tree,outgroup)
+GTR_tree_rooted <- root(fitGTR$tree,"Bovine")
+plot(GTR_tree_rooted)
 ```
 
 View the details of the `fitGTR` object. What is the log-likelihood?
