@@ -161,6 +161,7 @@ or other types of plots.
 par(mfrow=c(1,2))
 plot(tree, type = "cladogram")
 plot(tree, type = "radial")
+par(mfrow=c(1,1))
 ```
 
 
