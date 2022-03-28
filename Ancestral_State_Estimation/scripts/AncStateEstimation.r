@@ -86,15 +86,14 @@ rm(list = ls())
 #Data from Mahler et al. 2010. Evolution
 tree<-read.tree("../data/anole.svl.tre",tree.names=T)
 cont_data<-read.csv('../data/anole.svl.csv', row.names=1)
-
+cont_data_vect<-setNames(cont_data$svl,rownames(cont_data)) ##contMap needs a named vector for the data.
 
 ## -----anc_est_cont-----
-anc.cont.ML<-fastAnc(tree,cont_data$svl,vars=TRUE,CI=TRUE)
+anc.cont.ML<-fastAnc(tree,cont_data_vect,vars=TRUE,CI=TRUE)
 #anc.cont.ML #This would show us the estimate and 95% CI for each internal node
 anc.cont.ML$ace  #ancestral estimates
 
 #PLOT as color map
-cont_data_vect<-setNames(cont_data$svl,rownames(cont_data)) ##contMap needs a named vector for the data.
 tree.col<-contMap(tree,cont_data_vect,plot=FALSE)  #runs Anc. St. Est. on branches of tree
 plot(tree.col,type="fan")
 
