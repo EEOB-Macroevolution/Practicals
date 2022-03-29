@@ -35,17 +35,17 @@ Note, parts of this tutorial are based on and adapted from that of L. Revell: ht
 ### Download data files
 To run the analyses in this tutorial, please download the following files from our Git-course repository: 
 
-[Phylogeny1](https://eeob-macroevolution.github.io/Practicals/Phylo_Assoc_Discrete/data/anole.gp.tre)
+[Phylogeny1](https://eeob-macroevolution.github.io/Practicals/Ancestral_State_Estimation/data/anole.gp.tre)
 
-[Phylogeny2](https://eeob-macroevolution.github.io/Practicals/Phylo_Assoc_Discrete/data/anole.svl.tre)
+[Phylogeny2](https://eeob-macroevolution.github.io/Practicals/Ancestral_State_Estimation/data/anole.svl.tre)
 
-[Data1](https://eeob-macroevolution.github.io/Practicals/Phylo_Assoc_Discrete/data/anole.gp.csv)
+[Data1](https://eeob-macroevolution.github.io/Practicals/Ancestral_State_Estimation/data/anole.gp.csv)
 
-[Data2](https://eeob-macroevolution.github.io/Practicals/Phylo_Assoc_Discrete/data/anole.svl.csv)
+[Data2](https://eeob-macroevolution.github.io/Practicals/Ancestral_State_Estimation/data/anole.svl.csv)
 
 Additionally, The R-script for running the code found in this tutorial is found here:
 
-[RScript](https://eeob-macroevolution.github.io/Practicals/Phylo_Assoc_Discrete/scripts/AncStateEstimation.r)
+[RScript](https://eeob-macroevolution.github.io/Practicals/Ancestral_State_Estimation/scripts/AncStateEstimation.r)
 
 As before, on your local computer, place them in a folder named 'TutorialData', which is found in the same directory as this tutorial. 
 
