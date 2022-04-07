@@ -9,23 +9,19 @@ knit: (function(inputFile, encoding) {
   rmarkdown::render(inputFile, encoding = encoding, output_dir = "../") })
 ---
 
-
-
 ```{r,echo=F}
 
 knitr::read_chunk('MultivariatePCMs.R')
 
 ```
 
-
-
 ### **Overview**
 Today we examine how one can perform phylogenetic comparative analyses on multivariate datasets. For this, the phenotypic data (Y) is a N x p matrix of phenotypic values for N species, across p trait dimensions. These p-dimensions could be a set of univariate traits (e.g., length, width, height, etc.) or they could represent a multi-dimensional trait encoded by multiple numbers (e.g., shape from geometric morphometric methods). The goal is to evaluate patterns in the response variables (Y) while conditioning the data on the phylogeny. In other words, we wish to perform macroevolutionary analyses via phylogenetic comparative methods, but do so on multivariate data. 
 
-As we discussed in class, most univariate PCMs now have a multivariate counter-part: phylogenetic regression, phylogenetic ANOVA, phylogenetic correlation, phylogenetic signal, and comparing rates of phenotypic evolution. What does *NOT* have a proper multivariate counter-part are multivariate evolutionary models beyond BM1 and BMM (see Adams and Collyer 2018a; Adams and Collyer 2019). 
+As we discussed in class, most univariate PCMs now have a multivariate counter-part: phylogenetic regression, phylogenetic ANOVA, phylogenetic correlation, phylogenetic signal, and comparing rates of phenotypic evolution. Methods for comparing complex multivariate evolutionary models beyond BM1 and BMM are still an active area of development (see Adams and Collyer 2018a; Adams and Collyer 2019). 
 
 ### Download data files
-Today we will use data from the following files: 
+Today we will use data from within the package `geomorph`, as well as data from the following files: 
 
 [Phylogeny](https://eeob-macroevolution.github.io/EEOB-565X-Spring2018/practicals/TutorialData/Consensus of 1000 salamander trees.nex)
 
@@ -38,7 +34,7 @@ Additionally, The R-script for running the code found in this tutorial is found 
 As before, on your local computer, place them in a folder named 'TutorialData', which is found in the same directory as this tutorial. 
 
 ### **Visualizing High-Dimensional Data**
-One challenge with multivariate data is that visualizing patterns in such data is not always straightforward. For instance, we may have 8 phenotypic measurements per species (`TailLength`, `HeadLength`, `Snout.eye`, `BodyWidth`,  `Forelimb`, and  `Hindlimb`), meaning each species is a point in an 8-dimensional phenotype space. Visually characterizing patterns of dispersion in such spaces is challenging, so we rely on ordination methods from classical multivariate statistics. To do this, we first bring our data into R. Then we perform a principal components analysis to visualize a two-dimesional representation (projection) of our data that explains as much variation as is possible such that the dataspace is not distored (i.e., under the constraint of rigid rotations).
+One challenge with multivariate data is that visualizing patterns in such data is not always straightforward. In such cases, we have multiple phenotypic variables ($p>1$), for our set of $N$ species. Geometrically, what this means is that each species is a point in a $p$-dimensional phenotype space. Visually characterizing patterns of dispersion in such spaces is challenging, so we rely on ordination methods from classical multivariate statistics. When phylogeny is considered, several analytical options are possible; all of which are based on *principal components analysis*.
 
 The key for much of the principal components analysis that we'll do relies on `gm.prcomp()`, an extension of `prcomp()` that can also account for phylogeny.
 
@@ -47,7 +43,7 @@ The key for much of the principal components analysis that we'll do relies on `g
 <details>
   <summary> <font size="+2"> `gm.prcomp` </font> </summary>
  
-Function performs principal components analysis (PCA) or phylogenetically-aligned components (PaCA) on Procrustes shape coordinates.This function has a few different arguments but we'll primarily be concerned with the following:
+Function performs principal components analysis (PCA), phylogenetic PCA, or phylogenetically-aligned components (PaCA) on multivariate continuous data. This function has a few different arguments but we'll primarily be concerned with the following:
 
 * $A$ Can be a 3D array but for our purposes it will be multivariate data in an $n\times p$ matrix.
 * $phy$ a phylo object
@@ -60,39 +56,53 @@ This function performs the principal components analysis. Most of the elements t
 </div>
 <br></br>
 
+```{r,Ordination_prep, eval=TRUE}
+
+```
+
+### **Principal Components Analysis: PCA**
+Principal components analysis (PCA) is a common ordination approach that provides the best two-dimensional representation (projection), found by rotating the data to directions of the dataspace that maximize the total variation. These new directions become the new axes of our space, and are linear combinations of the original variables. They are found through a rigid rotation of the dataspace, meaning that distances, directions and angles between sets of points are preserved. 
+
+```{r,PCA_example, eval=TRUE}
+
+```
+
+### **Phylomorphospace**
+A phylomorphospace is simply a principal components analysis (PCA) with the phylogeny superimposed into the plot. That is, the PCA is obtained as before, ancestral states are estimated, and then projected into the plot. An example is below. 
+
+```{r,Phylomorph_example, eval=TRUE}
+
+```
+
+### **Phylogenetic PCA**
+Phylogenetic principal components analysis (pPCA) follows the same logic as above, only the rotation is conditioned on the phylogeny. The result of this is that the first pPCA dimension expresses variation *independent* of phylogenetic signal. Notice that this plot differs from the phylomorphospace above. 
+
+```{r,phyloPCA_example, eval=TRUE}
+
+```
+
+### **PACA: Phylogenetically-Aligned Components Analysis**
+PACA can be considered the complement to pPCA. Here, variation is rotated *towards* directions of phylogenetic signal, rather than away from it. Thus, PACA 1 describes variation expressing maximal phylogenetic signal in teh data. Comparisons of axis 1 from pPCA and PACA are useful in identifying the extent to which phylogenetic signal is embedded in our multivariate data. 
+
+```{r,PaCA_example, eval=TRUE}
+
+```
+
+
+### **Analyzing High-Dimensional Data**
+Now we will import data into R and perform a series of multivariate PCMs. For this example, we have 6 phenotypic measurements per species that serve as our response (Y) data: `TailLength`, `HeadLength`, `Snout.eye`, `BodyWidth`,  `Forelimb`, and  `Hindlimb`. We also have two predictor variables: `SVL` (snout-vent length = body size), and `group` ('large' or 'small' *Plethodon*). We will first use PCA to visualize the dataspace and then perform various hypothesis tests in a phylogenetic comparative framework.  Note that in the PCA, most variation is expressed in PC1.  In our case, this is *generalized size*: our variables are all linear distance (length) measurements, which all get larger or smaller as the animals are larger or smaller. 
+
 ```{r,read_data, eval=TRUE}
 
 ```
 
 
-
-#### **Phylomorphospaces**
-When one has a phylogeny, one useful visualization is a phylomorphospace. Here, an ordination is performed on the phenotypic data at the tips of the phylogeny, ancestral states are estimated, and these are projected into the dataspace. This forms a plot that contains both the tips, and the phylogeny; allowing a visual inspection of how trait dispersion relative to the phylogenetic relationships among taxa. Such plots are very useful for hypothesis generation, as discussed in class. 
-
-We can plot phylomorphospace similar to our plotting of the PCA, however, we need to add an additional argument `phylo=TRUE` to the `plot()` function.
-
-```{r,Phylomorphospace, eval=TRUE}
- 
-```
-
-Notice that the points don't move at all between our PCA and phylomorphospace plots, this is because the latter merely plots the phylogeny in the principal components analysis. We are **NOT** accounting for phylogeny in the analytical step of computing our principal components
-
-#### **Phylo PCA**
-
-We can directly account for the phylogeny in our principal components analysis through GLS. Much like GLS can be used in regression to account for phylogeny by using the phylogenetic covariance matrix in the error term, we can use the phylogeny for covariance estimation and centering.
-
-To perform phylo PCA we only need to set `GLS=TRUE` in the `gm.prcomp()` function.
-
-```{r,phylo_pca,eval=TRUE}
-
-```
-
 #### **Phylogenetic Regression**
-For univariate response data, the 'workhorse' of PCMs is undoubtedly phylogenetic regression. Three implementations are commonly used and all lead to identical results when implemented properly: phylogenetically independent contrasts (PIC), phylogenetic generalized least squares (PGLS), and phylogenetic-transformation with OLS regression. Unfortunately, for multivariate data, as trait dimensionality increases, the power of these methods decreases, because test statistics are evaluated using parametric approaches (Adams 2014a; Adams and Collyer 2015). 
+Next we wish to test hypotheses describing trends of variation in our dataset. For univariate response data, the 'workhorse' of PCMs is undoubtedly phylogenetic regression. Three implementations are commonly used and all lead to identical results when implemented properly: phylogenetically independent contrasts (PIC), phylogenetic generalized least squares (PGLS), and phylogenetic-transformation with OLS regression. Unfortunately, for multivariate data, as trait dimensionality increases, the power of these methods decreases, because test statistics are evaluated using parametric approaches (Adams 2014a; Adams and Collyer 2015). 
 
 One solution is to use permutation methods. Specifically, phylogenetic transformation of the X and Y data is performed, and residuals from a reduced model are permuted (RRPP) to obtain significance (Adams and Collyer 2018b). The method has been shown to display appropriate type I error and has high power. It is implemented below.
 
-To accomplish this we use `procD.pgls()`, it works much like `lm()`, `glm()`, or `lm.rrpp()` in that we need to provide a formula for our regression. They main difference is that there is also a `phy` argument and a number of iterations `iter` since we are using permutation. However, before we begin our regression, we need to put our data in a special geomorph dataframe with `geomorph.data.frame()`.
+To accomplish this we use `lm.rrpp()`, it works much like `lm()` or `gls()` in that we need to provide a formula for our regression. They main difference is that there is also a `Cov` argument for supplying an object covariance matrix: such as a phylogenetic covariance matrix, a spatial covariance matrix, or a temporal covariance matrix. The number of iterations `iter` can also be specified for the number of permutations. However, before we begin our regression, we need to put our data in a special `RRPP` dataframe with `rrpp.data.frame()`.
 
 ```{r,phylo_reg, eval=TRUE}
  
