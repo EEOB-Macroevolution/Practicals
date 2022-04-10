@@ -30,9 +30,17 @@ Here we will be going over how to set up and use BiSSE and HiSSE models in R.
 
 * Be able to make and fit BiSSE models in R
     + Know how to constrain a BiSSE model
-* Evaluate which models are a better fit, either thru AIC or Log-likelihoods
+* Evaluate which models are a better fit, either through AIC or Log-likelihoods
 * Comprehend the rate matrix of a HiSSE model and be able to make on in R
 * Fit a HiSSE model given a phylogeny and data
+
+## Scripts
+
+For this lesson, we will be working with simulated data, so you will not need to download data files to execute these analayses. You can download the R script from the course repository:
+
+* [`HiSSE_BiSSE_tutorial.R`](https://raw.githubusercontent.com/EEOB-Macroevolution/Practicals/main/BiSSE_HiSSE/scripts/HiSSE_BiSSE_tutorial.R)
+* [`HiSSE_BiSSE_tutorial.Rmd`](https://raw.githubusercontent.com/EEOB-Macroevolution/Practicals/main/BiSSE_HiSSE/scripts/HiSSE_BiSSE_tutorial.Rmd)
+
 
 
 ## Background Material
