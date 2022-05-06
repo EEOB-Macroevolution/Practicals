@@ -19,8 +19,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Introduction 
 
-Plants have complex reproductive systems that can roughly be broken into two categories: self compatible (SC) plants that are hermaphrodidic and can self-fertilize and self incompatible (SI) where plants reject their own pollen for reproduction. Self compatability has arisen multiple times across plants and both modes of reproduction are roughly equally abundant. It was hypothesized that SC plants may experience increased levels of inbreeding depression, and consequently, higher rates of extinction than their SI counterparts, making SI plants diversify more quickly than SC plants. 
-Interestingly, Goldberg and Igic used models of trait-dependent speciation and extinction to find that SI plants diversify at higher rates than SC plants. 
+Plants have complex reproductive systems that can roughly be broken into two categories: self compatible (SC) plants that are hermaphrodidic and can self-fertilize and self incompatible (SI) where plants reject their own pollen for reproduction. Self compatibility has arisen multiple times across plants and both modes of reproduction are roughly equally abundant. It was hypothesized that SC plants may experience increased levels of inbreeding depression, and consequently, higher rates of extinction than their SI counterparts, making SI plants diversify more quickly than SC plants. 
+Interestingly, Goldberg and Igic ([2012](https://onlinelibrary.wiley.com/doi/full/10.1111/j.1558-5646.2012.01730.x)) used models of trait-dependent speciation and extinction to find that SI plants diversify at higher rates than SC plants. 
 
 These state-dependent speciation and extinction models, or $SSE$ type models are used to reflect the belief that rates of species diversification may depend on some trait that is itself changing over time.
 Here we will be going over how to set up and use BiSSE and HiSSE models in R.
@@ -30,9 +30,17 @@ Here we will be going over how to set up and use BiSSE and HiSSE models in R.
 
 * Be able to make and fit BiSSE models in R
     + Know how to constrain a BiSSE model
-* Evaluate which models are a better fit, either thru AIC or Log-likelihoods
+* Evaluate which models are a better fit, either through AIC or Log-likelihoods
 * Comprehend the rate matrix of a HiSSE model and be able to make on in R
 * Fit a HiSSE model given a phylogeny and data
+
+## Scripts
+
+For this lesson, we will be working with simulated data, so you will not need to download data files to execute these analayses. You can download the R script from the course repository:
+
+* [`HiSSE_BiSSE_tutorial.R`](https://raw.githubusercontent.com/EEOB-Macroevolution/Practicals/main/BiSSE_HiSSE/scripts/HiSSE_BiSSE_tutorial.R)
+* [`HiSSE_BiSSE_tutorial.Rmd`](https://raw.githubusercontent.com/EEOB-Macroevolution/Practicals/main/BiSSE_HiSSE/scripts/HiSSE_BiSSE_tutorial.Rmd)
+
 
 
 ## Background Material
@@ -47,7 +55,7 @@ For more background on the BiSSE and HiSSE models, please read:
 
 ## Setup
 
-The $BiSSE$ model is implemented as part of the `diversitree` package, which also contains many other -SSE models, while the $HiSSE$ model is implemented in the standalone package `hisse`. So we will start by installing and loading both of these packages.
+The *BiSSE* model is implemented as part of the `diversitree` package, which also contains many other -SSE models, while the *HiSSE* model is implemented in the standalone package `hisse`. So we will start by installing and loading both of these packages.
 
 ```{r eval=FALSE}
 install.packages("diversitree")
@@ -66,7 +74,8 @@ library(hisse)
 
 The Binary State-dependent Speciation and Extinction model is used when we believe that diversification rates depend on some binary character. This model has six parameters, $q_{01}$ and $q_{10}$ which describe the rate at which the binary character transitions from one state to another, and $\lambda_{0}$, $\mu_{0}$, $\lambda_{1}$, and $\mu_{1}$ which describe the diversification dynamics while a lineage is in state $0$ and $1$ respectively. Given a phylogeny and character values, we can estimate these parameters in R to learn about our system of interest.
 
-Insert image of model
+![A schematic overview of the BiSSE model from https://revbayes.github.io/tutorials/sse/bisse-intro.html#bisse_theory.](https://revbayes.github.io/tutorials/sse/figures/BiSSE.png)
+
 
 ### Setting up the BiSSE model in R
 
@@ -111,7 +120,7 @@ As you can see we have a phylogeny with 75 tips. As always with a phylogeny, we 
 ```{r}
 names(tree_bisse) ##See which components exist for our simulated phylogeny.
 ```
-Perhaps of most note we can see a component called `tip.state`, this tells us which of the two states each tip is in. This is the type of data that researchers will have when trying to fit these types of models on a phylogeny.
+Most notably, we can see a component called `tip.state`, this tells us which of the two states each tip is in. This is the type of data that researchers will have when trying to fit these types of models on a phylogeny.
 ```{r}
 tree_bisse$tip.state
 
@@ -127,13 +136,13 @@ plot(treehistory, tree_bisse, cols = c("red", "blue"))
 </details>
 \
 
-These data are simulated together under a BiSSE model where the diversification rates differ between the binary states. Specifically, we'll be assuming these parameters:
+These data are simulated together under a BiSSE model where the diversification rates differ between the binary states. Specifically, we'll be assuming these parameters (used in `sim_parameters`):
 
 ```{r, echo=FALSE}
 
 sim_parameters
 ```
-We can see that $\lambda_1$ is higher than $\lambda_0$, meaning that lineages in state $1$ will speciate at a higher rate than those in state $0$. Knowing the conditions that we simulate under can be helpful in telling us both which models may be appropriate to use and whether our estimates were accurate. 
+We can see that $\lambda_1$ is higher than $\lambda_0$, meaning that lineages in state $1$ will speciate at a higher rate than those in state $0$. Knowing the conditions under which we simulate can be helpful for telling us both which models may be appropriate to use and whether our estimates were accurate. 
 
 ### Fitting the BiSSE model
 
@@ -199,7 +208,7 @@ initial_pars<-starting.point.bisse(tree_bisse)
 fit_model<-find.mle(bisse_model,initial_pars)
 
 ```
-**Note:** Contrary to the name of the function, `find.mle()` doesn't guarantee that we actually find the parameters that maximize the likelihood as `find.mle()` is a [greedy algorithm](https://en.wikipedia.org/wiki/Greedy_algorithm), meaning that it will find a local optima which may or may not be the global optima that maximizes likelihood. As a result, we may get a different results based on the initial values we choose. It can be a good practice to try a few different starting points with `find.mle()` and if they converge on the same set of parameter values then we can be more confident that we are at a global optimum. 
+**Note:** Contrary to the name of the function, `find.mle()` doesn't guarantee that we actually find the parameters that maximize the likelihood as `find.mle()` is a [greedy algorithm](https://en.wikipedia.org/wiki/Greedy_algorithm), meaning that it will find a local optimum which may or may not be the global optimum that maximizes likelihood. As a result, we may get a different results based on the initial values we choose. It can be a good practice to try a few different starting points with `find.mle()` and if they converge on the same set of parameter values then we can be more confident that we are at a global optimum. 
 
 The object returned from `find.mle()` has a slew of different components. Two componenets that might be useful for us are the log-likelihood of the fit model and the parameter estimates, these are denoted with   `lnLik` and `par` respectively.
 
@@ -263,7 +272,12 @@ The AIC comparison of the two models shows that the constrained model is a bette
 ## Detecting changes in diversification rates with HiSSE
 
 One issue with the BiSSE model is that it has trouble distinguishing between changes in rates that are tied to the character state tested, and changes in rates which are independent of that character.
-To test this, we make up a secondary character for our tree.
+The HiSSE model (hidden-state dependent speciation and extinction) incorporates a 2nd, unobserved character to account for correlations that are not tied to the character we are testing.
+Changes in the unobserved character’s state represent background diversification rate shifts that are uncorrelated with the observed character [[Beaulieu & O'Meara 2016](https://doi.org/10.1093/sysbio/syw022)].
+
+Let's start by simulating a secondary character for our tree.
+
+![A schematic overview of the HiSSE model from https://revbayes.github.io/tutorials/sse/hisse.html](https://revbayes.github.io/tutorials/sse/figures/HiSSE.png)
 
 
 ```{r}
@@ -354,7 +368,7 @@ null_rate_matrix
 
 The observed characters are denoted with either a $0$ or a $1$ while the hidden characters are denoted with $A$ and $B$
 
-The markings of 1, 2, or 3 don't tell us what the actual rates are, just that elements with the same number will share a rate in our model. This is similar to the `constrain()` function we used in the bisse but instead we are constraining certain transition rates to be equal. 
+The markings of 1, 2, or 3 don't tell us what the actual rates are, just that elements with the same number will share a rate in our model. This is similar to the `constrain()` function we used in the BiSSE model but instead we are constraining certain transition rates to be equal. 
 
 We can see that whenever there is a transition from $A \leftrightarrow{B}$ they all have the same rate (denoted with 1), regardless of whether we're in state $1$ or $2$. We can also see transitions from $1\rightarrow{0}$ all have the same rate and are denoted with a 1 while transitions from $0\rightarrow{1}$ have the same rate denoted by all having a 2. We can also see a few `NA`s in our matrix, we see these whenever we see both states transition at once ( $1A \leftrightarrow{0B}$ or $0A \leftrightarrow{1B}$). Generally, we assume that only one state changes at a given time so we want to exclude the possibility that both transitions occur at once.
 
@@ -363,7 +377,7 @@ Next we need to specify which diversification rates are shared between states. U
 * $net\ turnover= \lambda+\mu$
 * $extinction\ fraction = \mu/\lambda$
 
-The states are ordered 0A, 1A, 0B, 1B, so we will specify that the diversification rates are identical between 0 and 1 but can differ between A and B - i.e. that states 0A and 1A share one value, and 0B and 1B share another. We chose specify these values to model the idea that changes in diversification are solely due to the hidden state and not the trait data we provide.
+The states are ordered 0A, 1A, 0B, 1B, so we will specify that the diversification rates are identical between 0 and 1 but can differ between A and B - i.e. that states 0A and 1A share one value, and 0B and 1B share another. We chose to specify these values to model the idea that changes in diversification are solely due to the hidden state and not the trait data we provide.
 
 ```{r}
 null_net_turnover <- c(1,1,2,2)
@@ -376,7 +390,7 @@ And finally we will transform the tip character we simulated previously into the
 hisse_states <- cbind(names(secondary_trait), secondary_trait)
 ```
 
-Now we can run the ML estimation on the $HiSSE$ null model.
+Now we can run the ML estimation on the *HiSSE* null model.
 
 ```{r}
 null_hisse <- hisse(phy = tree_bisse, data = hisse_states, hidden.states=TRUE,
@@ -415,6 +429,7 @@ AIC(fit_constrained_model)
 
 Here we can see the null $HiSSE$ model actually was a poor fit and AIC value for the `constrained_bisse_mle` model indicates that the data fit this model the best.
 
+<div class = "try">
 ## Try it out - Tribble Diversification
 
 Here we will be looking at the diversification of the fictional species of [Tribbles](https://en.wikipedia.org/wiki/Tribble) from the Startrek universe. Tribbles are little balls of fur that reproduce at a prolific rate. [Klingons are the natural predators](https://www.youtube.com/watch?v=1FTNPtANZXQ) of the Tribbles. As a defense mechanism, some species of Tribble have developed the ability to squeal when in the presence of a Klingon. The ability to squeal has led some scientists to hypothesize that the release from predation has led to an increase in net diversification ($\lambda-\mu$). We can use the BiSSE and HiSSE models to evaluate this hypothesis
@@ -444,3 +459,5 @@ If we did a Bayesian analysis on the Tribble phylogeny we would get a posterior 
 Here you will find 50 different trees from our posterior. Try running the $BiSSE$ and $HiSSE$ models on the posterior set of trees, recording the model that has the best fit (has the lowest AIC) and the net diversification for each state. *Note* Since the $HiSSE$ model uses a reparameterization of the speciation and extinction rate you will need to do a bit of algebra to compute net diversification if it is the best fit.
 
 Which model tended to fit the best? What was the average net diversification among the two states for the best fit model? Make two histograms with the net diversification of the best fit models of the posterior trees, Does it look like they differ?  
+</div>
+<br></br>
