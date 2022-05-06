@@ -129,7 +129,7 @@ plot(dat.sim, asp=1)
 ## ---- Phylo_cor_sim ----
 #Simulate BM correlated data on phylogeny
 mytree<- pbtree(n=100, scale=1) #one way to simulate a tree
-R<-matrix(0.7, nrow=2,ncol=2); diag(R)<-1 ## This matrix desribes the covariation between traits
+R<-matrix(0.7, nrow=2,ncol=2); diag(R)<-1 ## This matrix describes the covariation between traits
 R
 dat.BM<-sim.char(phy = mytree,par = R,nsim = 1)[,,1]
 plot(dat.BM, asp=1)
