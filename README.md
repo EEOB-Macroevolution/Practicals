@@ -1,4 +1,4 @@
-# EEOB565X- Practical Course Files Repository
+# EEOB565 Practical Course Files Repository
 
 This repository contains the tutorials for Macroevolution (BIOL 465 / EEOB 565), a graduate and advanced undergraduate course at Iowa State University. 
 
