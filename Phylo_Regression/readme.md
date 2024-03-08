@@ -26,6 +26,8 @@ RRPP
 geomorph
 MASS
 
+**Note:** If when plotting you get an error regarding not being able to find the function `getYMult()`, then you may need to additionally install the `Plotrix` package.
+
 
 ## Year to year maintenance 
 
